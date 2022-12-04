@@ -2,10 +2,27 @@
   <v-layout>
     <v-card class="p-4 w-100 h-screen overflow-auto" style="padding: 30px">
       <v-list class="p-4" select-strategy="single-independent">
-        <v-btn color="primary" class="white--text" @click="addNewMember()">
+        <v-btn color="primary" class="white--text" @click="() => {addNewMember(); snackbarAdd = true}">
           <v-icon class="mr-3">mdi-plus</v-icon>
           Add new member
         </v-btn>
+
+        <v-snackbar
+          v-model="snackbarAdd"
+          color="success" 
+        >
+          Member added successfully!
+
+          <template v-slot:actions>
+            <v-btn
+              color="success"
+              variant="flat"
+              @click="snackbarAdd = false"
+            >
+              Close
+            </v-btn>
+          </template>
+        </v-snackbar>
 
         <v-list-item
           v-for="(member, i) in members"
@@ -38,16 +55,51 @@
           <v-btn
             color="error"
             class="white--text h-full"
-            @click="removeMember(i)"
+            @click="() => { removeMember(i); snackbarDelete= true }"
           >
             <v-icon class="mr-3">mdi-delete</v-icon>
             Remove member
           </v-btn>
+          
+          <v-snackbar
+            v-model="snackbarDelete"
+            color="success"
+          >
+            Member deleted successfully!
 
-          <v-btn color="success" class="white--text ml-4" @click="saveOldMember(i)">
+            <template v-slot:actions>
+              <v-btn
+                color="success"
+                variant="flat"
+                @click="snackbarDelete = false"
+              >
+                Close
+              </v-btn>
+            </template>
+          </v-snackbar>
+
+
+          <v-btn color="success" class="white--text ml-4" @click="() => {saveOldMember(i); snackbarSave = true}">
             <v-icon class="mr-3">mdi-content-save</v-icon>
             Save
           </v-btn>
+
+          <v-snackbar
+            v-model="snackbarSave"
+            color="success"
+          >
+            Member saved successfully!
+
+            <template v-slot:actions>
+              <v-btn
+                color="success"
+                variant="flat"
+                @click="snackbarSave = false"
+              >
+                Close
+              </v-btn>
+            </template>
+          </v-snackbar>
         </v-list-item>
       </v-list>
     </v-card>
@@ -66,6 +118,9 @@ import {
 } from "@/database";
 
 const members = ref<HeadMember[]>([]);
+const snackbarAdd = ref(false);
+const snackbarDelete = ref(false);
+const snackbarSave = ref(false);
 
 function addNewMember() {
   const memberRef = addMember({

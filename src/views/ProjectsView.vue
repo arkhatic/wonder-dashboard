@@ -1,4 +1,58 @@
 <template>
+  <v-snackbar v-model="snackbarAdd" :timeout="3000" color="success">
+    Project added successfully!
+
+    <template v-slot:actions>
+      <v-btn color="success" variant="flat" @click="snackbarAdd = false">
+        Close
+      </v-btn>
+    </template>
+  </v-snackbar>
+  <v-snackbar v-model="snackbarMemberAdded" :timeout="1000" color="success">
+    Member added successfully!
+
+    <template v-slot:actions>
+      <v-btn
+        color="success"
+        variant="flat"
+        @click="snackbarMemberAdded = false"
+      >
+        Close
+      </v-btn>
+    </template>
+  </v-snackbar>
+  <v-snackbar v-model="snackbarMemberDeleted" :timeout="1000" color="error">
+    Member deleted successfully!
+
+    <template v-slot:actions>
+      <v-btn
+        color="error"
+        variant="flat"
+        @click="snackbarMemberDeleted = false"
+      >
+        Close
+      </v-btn>
+    </template>
+  </v-snackbar>
+  <v-snackbar v-model="snackbarSaved" :timeout="3000" color="success">
+    Project saved successfully!
+
+    <template v-slot:actions>
+      <v-btn color="success" variant="flat" @click="snackbarSaved = false">
+        Close
+      </v-btn>
+    </template>
+  </v-snackbar>
+  <v-snackbar v-model="snackbarDeleted" :timeout="3000" color="error">
+    Project deleted successfully!
+
+    <template v-slot:actions>
+      <v-btn color="error" variant="flat" @click="snackbarDeleted = false">
+        Close
+      </v-btn>
+    </template>
+  </v-snackbar>
+
   <v-container>
     <v-row>
       <v-col cols="2">
@@ -10,11 +64,11 @@
             </v-list-subheader>
 
             <v-list-item
-              v-for="project in projects"
+              v-for="(project, i) in projects"
               :key="project.name"
               :title="project.name"
               :value="project.name"
-              @click="selectProject(project)"
+              @click="selectProject(i)"
             ></v-list-item>
 
             <v-divider></v-divider>
@@ -122,19 +176,19 @@
                     label="New project name"
                     :placeholder="projects[index].name"
                     type="text"
-                    v-model="newProjectName"
+                    v-model="projects[index].name"
                   ></v-text-field>
                   <v-text-field
                     label="New project description"
                     type="text"
                     :placeholder="projects[index].description"
-                    v-model="newProjectDescription"
+                    v-model="projects[index].description"
                   ></v-text-field>
                   <v-text-field
                     label="New project cover image link"
                     type="text"
                     :placeholder="projects[index].coverImage"
-                    v-model="newProjectCoverImage"
+                    v-model="projects[index].coverImage"
                   ></v-text-field>
 
                   <v-list select-strategy="single-independent">
@@ -150,7 +204,7 @@
                     <!-- make item not selectable -->
 
                     <v-list-item
-                      v-for="(member, i) in newProjectMembers"
+                      v-for="(member, i) in projects[index].members"
                       class="mt-5 py-4 rounded bg-secondary"
                       :key="i"
                       :value="i"
@@ -180,7 +234,7 @@
                       <v-btn
                         color="error"
                         class="white--text h-full"
-                        @click="removeMember(i)"
+                        @click="deleteMember(i)"
                       >
                         <!-- trash bin icon -->
                         <v-icon class="mr-3">mdi-delete</v-icon>
@@ -194,46 +248,19 @@
               <v-window-item :value="3">
                 <div class="pa-4 h-100 text-center">
                   <h1>Are you sure you want to edit the project?</h1>
+                  <v-btn
+                    color="success"
+                    class="white--text mr-4"
+                    @click="saveProject()"
+                  >
+                    <v-icon class="mr-3">mdi-grease-pencil</v-icon>
+                    Yes I am.
+                  </v-btn>
 
-                  <v-card-text>
-                    <v-dialog v-model="dialogSuc" persistent>
-                      <template v-slot:activator="{ props }">
-                        <v-btn
-                          color="success"
-                          class="white--text mr-4"
-                          @click="saveProject()"
-                          v-bind="props"
-                        >
-                          <v-icon class="mr-3">mdi-grease-pencil</v-icon>
-                          Yes I am.
-                        </v-btn>
-                      </template>
-                      <v-card>
-                        <v-card-title class="text-h5">
-                          Project added scessfully!
-                        </v-card-title>
-                        <v-card-text
-                          >Now, you have to reload the page to fetch your
-                          changes.</v-card-text
-                        >
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            color="green-darken-1"
-                            variant="text"
-                            @click="handleReload()"
-                          >
-                            Ok
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-
-                    <v-btn color="error" class="white--text" @click="step--">
-                      <v-icon class="mr-3">mdi-chevron-left</v-icon>
-                      No, I am not.
-                    </v-btn>
-                  </v-card-text>
+                  <v-btn color="error" class="white--text" @click="step--">
+                    <v-icon class="mr-3">mdi-chevron-left</v-icon>
+                    No, I am not.
+                  </v-btn>
                 </div>
               </v-window-item>
 
@@ -244,49 +271,19 @@
                     project?
                   </h1>
 
-                  <v-card-text>
-                    <v-dialog v-model="dialogErr" persistent>
-                      <template v-slot:activator="{ propsErr }">
-                        <v-btn
-                          color="error"
-                          class="white--text mr-4"
-                          @click="deleteExistingProject()"
-                          v-bind="propsErr"
-                        >
-                          <v-icon class="mr-3">mdi-delete</v-icon>
-                          Yes I am.
-                        </v-btn>
-                      </template>
-                      <v-card>
-                        <v-card-title class="text-h5">
-                          Project added scessfully!
-                        </v-card-title>
-                        <v-card-text
-                          >Now, you have to reload the page to fetch your
-                          changes.</v-card-text
-                        >
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            color="green-darken-1"
-                            variant="text"
-                            @click="handleReload()"
-                          >
-                            Ok
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
+                  <v-btn
+                    color="error"
+                    class="white--text mr-4"
+                    @click="deleteExistingProject(projects[index].id)"
+                  >
+                    <v-icon class="mr-3">mdi-delete</v-icon>
+                    Yes I am.
+                  </v-btn>
 
-                    <v-btn
-                      color="success"
-                      class="white--text"
-                      @click="step -= 2"
-                    >
-                      <v-icon class="mr-3">mdi-chevron-left</v-icon>
-                      No, I am not.
-                    </v-btn>
-                  </v-card-text>
+                  <v-btn color="success" class="white--text" @click="step -= 2">
+                    <v-icon class="mr-3">mdi-chevron-left</v-icon>
+                    No, I am not.
+                  </v-btn>
                 </div>
               </v-window-item>
             </v-window>
@@ -330,7 +327,7 @@
             </v-card-actions>
           </v-card>
 
-          <v-card v-else>
+          <v-card v-else class="text-center h-full w-full">
             <h1>Please select a project first.</h1>
           </v-card>
         </v-sheet>
@@ -344,34 +341,96 @@ import { ref, onMounted } from "vue";
 import {
   getProjects,
   getHead,
-  deleteProject,
-  Member,
-  editProject,
   addProject,
+  Member,
+  Project,
+  NewProject,
+  editProject,
+  deleteProject,
+  getProjectId,
 } from "@/database";
 import { DocumentData } from "@firebase/firestore";
-interface NewProject {
-  name: string;
-  description: string;
-  coverImage: string;
-  members: Member[];
-  id: string;
-}
 
 const projects = ref<NewProject[]>([]);
-const projectSnapshot = ref<NewProject>({} as NewProject);
 const head = ref<Member[]>([]);
 const loading = ref(true);
 const index = ref<number>(-1);
 
-const dialogSuc = ref(false);
-const dialogErr = ref(false);
+const snackbarAdd = ref(false);
+const snackbarSaved = ref(false);
+const snackbarDeleted = ref(false);
+const snackbarMemberAdded = ref(false);
+const snackbarMemberDeleted = ref(false);
+
 const step = ref(1);
 
-const newProjectName = ref("");
-const newProjectDescription = ref("");
-const newProjectCoverImage = ref("");
-const newProjectMembers = ref<Member[]>([]);
+const projectBoilerplate: Project = {
+  name: "Project name",
+  description: "A brief description about the project.",
+  coverImage: "The link for the cover image.",
+  members: [
+    {
+      name: 'Name "Nickname"',
+      profilePicture:
+        "https://aniyuki.com/wp-content/uploads/2022/03/aniyuki-anime-girl-avatar-51.jpg",
+      role: "Role Role",
+    },
+  ],
+};
+
+function addNewProject() {
+  const newProjectRef = addProject(projectBoilerplate);
+  newProjectRef.then((id) => {
+    projects.value.push({
+      ...projectBoilerplate,
+      id: id,
+    });
+    index.value = projects.value.length - 1;
+  });
+  snackbarAdd.value = true;
+}
+
+function addNewMember() {
+  projects.value[index.value].members.push({
+    name: 'Name "Nickname"',
+    profilePicture:
+      "https://aniyuki.com/wp-content/uploads/2022/03/aniyuki-anime-girl-avatar-51.jpg",
+    role: "Role",
+  });
+  snackbarMemberAdded.value = true;
+}
+
+function deleteMember(indexMember: number) {
+  projects.value[index.value].members.splice(indexMember, 1);
+  snackbarMemberDeleted.value = true;
+}
+
+function deleteExistingProject(id: string) {
+  snackbarDeleted.value = true;
+  index.value = -1;
+  step.value = -1;
+  projects.value.splice(index.value, 1);
+  deleteProject(id);
+}
+
+function saveProject() {
+  snackbarSaved.value = true;
+  editProject({
+    name: projects.value[index.value].name,
+    description: projects.value[index.value].description,
+    coverImage: projects.value[index.value].coverImage,
+    members: projects.value[index.value].members,
+    id: projects.value[index.value].id,
+  });
+
+  step.value = -1;
+  index.value = -1;
+}
+
+function selectProject(i: number) {
+  step.value = 1;
+  index.value = i;
+}
 
 const newProject = ref<NewProject>({
   name: "Name",
@@ -388,53 +447,6 @@ const newProject = ref<NewProject>({
   ],
   id: "",
 });
-
-function addNewProject() {
-  const projectAddedId = addProject(newProject.value);
-  projectAddedId.then((id) => {
-    newProject.value.id = id;
-  });
-  projects.value.push(newProject.value);
-  // reload page
-}
-
-function addNewMember() {
-  newProjectMembers.value.push({
-    name: "",
-    role: "",
-    profilePicture: "",
-  });
-}
-
-function removeMember(i: number) {
-  newProjectMembers.value.splice(i, 1);
-}
-
-function saveProject() {
-  newProject.value.name = newProjectName.value;
-  newProject.value.description = newProjectDescription.value;
-  newProject.value.coverImage = newProjectCoverImage.value;
-  newProject.value.members = newProjectMembers.value;
-
-  editProject(newProject.value);
-  // refresh page
-}
-
-function deleteExistingProject() {
-  deleteProject(projects.value[index.value].id);
-  projects.value.splice(index.value, 1);
-  index.value = -1;
-}
-
-function selectProject(project: NewProject) {
-  index.value = projects.value.indexOf(project);
-  projectSnapshot.value = projects.value[index.value];
-  newProjectName.value = projectSnapshot.value.name;
-  newProjectDescription.value = projectSnapshot.value.description;
-  newProjectCoverImage.value = projectSnapshot.value.coverImage;
-  newProjectMembers.value = projectSnapshot.value.members;
-  step.value = 1;
-}
 
 function handleReload() {
   window.location.reload();
@@ -459,7 +471,10 @@ onMounted(async () => {
         description: d.description,
         coverImage: d.coverImage,
         members: d.members,
-        id: d.id,
+        id: "",
+      });
+      getProjectId(d.name).then((id) => {
+        projects.value[i].id = id;
       });
     }
   });

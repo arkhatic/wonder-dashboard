@@ -20,6 +20,20 @@ const db = getFirestore(app);
 // head -> head -> members -> [member]
 // teams -> toTheMoon -> name, description, coverImage, members -> [member]
 
+
+interface Member {
+  name: string;
+  role: string;
+  profilePicture: string;
+}
+
+interface HeadMember {
+  name: string;
+  role: string;
+  profilePicture: string;
+  id: string
+}
+
 interface Project {
   name: string;
   description: string;
@@ -35,19 +49,8 @@ interface NewProject {
   id: string
 }
 
-interface Member {
-  name: string;
-  role: string;
-  profilePicture: string;
-}
 
-interface HeadMember {
-  name: string;
-  role: string;
-  profilePicture: string;
-  id: string
-}
-
+// head members operations
 async function addMember(member: Member): Promise<string> {
   const docRef = await addDoc(collection(db, "head"), member);
   return docRef.id;
@@ -80,6 +83,8 @@ async function getMemberId(name: string): Promise<string> {
   return id;
 }
 
+
+// projects operations
 async function addProject(project: Project): Promise<string> {
   const docRef = await addDoc(collection(db, 'teams'), {
     name: project.name,
@@ -94,11 +99,28 @@ async function deleteProject(id: string): Promise<string> {
   await deleteDoc(doc(db, 'teams', id));
   return id;
 }
+
+async function getProjectId(name: string): Promise<string> {
+  const querySnapshot = await getDocs(collection(db, 'teams'));
+  let id = '';
+  querySnapshot.forEach((doc) => {
+    if (doc.data().name === name) {
+      id = doc.id;
+    }
+  });
+  return id;
+}
+
 async function editProject(project: NewProject) {
   const docRef = doc(db, 'teams', project.id);
   await deleteDoc(docRef);
-  const addedDocId = addProject(project);
-  return addedDocId;
+  const addedDoc = await setDoc(doc(db, 'teams', project.id), {
+    name: project.name,
+    description: project.description,
+    coverImage: project.coverImage,
+    members: project.members
+  });
+  return addedDoc;
 }
 
 const getHead = async () => {
@@ -120,8 +142,9 @@ const getProjects = async () => {
 }
 
 export {
+  app,
   addMember, deleteMember, saveMember, getMemberId,
-  addProject, editProject, deleteProject,
+  addProject, editProject, deleteProject, getProjectId,
   getHead, getProjects,
-  Project, Member, HeadMember
+  NewProject, Project, Member, HeadMember
 };
