@@ -349,6 +349,7 @@ import {
   editProject,
   addProject,
 } from "@/database";
+import { DocumentData } from "@firebase/firestore";
 interface NewProject {
   name: string;
   description: string;
@@ -452,6 +453,8 @@ onMounted(async () => {
   });
   loading.value = false;
 });
+
+
 </script>
 
 <style scoped>

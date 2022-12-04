@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, setDoc, DocumentData } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDOq0Rpfe1ro7X5Eixfpxq4zUQV-YKKX80",
@@ -103,7 +103,7 @@ async function editProject(project: NewProject) {
 
 const getHead = async () => {
   const querySnapshot = await getDocs(collection(db, "head"));
-  var head = [];
+  var head: DocumentData[] = [];
   querySnapshot.forEach((doc) => {
     head.push(doc.data());
   });
@@ -112,7 +112,7 @@ const getHead = async () => {
 
 const getProjects = async () => {
   const querySnapshot = await getDocs(collection(db, 'teams'));
-  let lead = [];
+  let lead: DocumentData[] = [];
   querySnapshot.forEach((doc) => {
     lead.push(doc.data());
   });
