@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-layout>
-      <v-navigation-drawer expand-on-hover rail>
+      <v-navigation-drawer expand-on-hover rail permanent>
         <v-list>
           <v-list-item
             prepend-icon="mdi-account-circle"

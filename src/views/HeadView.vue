@@ -44,7 +44,7 @@
             Remove member
           </v-btn>
 
-          <v-btn color="success" class="white--text" @click="saveOldMember(i)">
+          <v-btn color="success" class="white--text ml-4" @click="saveOldMember(i)">
             <v-icon class="mr-3">mdi-content-save</v-icon>
             Save
           </v-btn>
