@@ -31,7 +31,7 @@
 
       <v-col v-if="!loading">
         <v-sheet rounded="lg" class="bg-grey-darken-4" style="height: 90vh">
-          <v-card v-if="(index >= 0)" class="mx-auto pt-4 overflow-auto h-100">
+          <v-card v-if="index >= 0" class="mx-auto pt-4 overflow-auto h-100">
             <v-card-title
               class="text-h6 font-weight-regular justify-space-between"
             >
@@ -213,7 +213,8 @@
                           Project added scessfully!
                         </v-card-title>
                         <v-card-text
-                          >Now, you have to reload the page to fetch your changes.</v-card-text
+                          >Now, you have to reload the page to fetch your
+                          changes.</v-card-text
                         >
                         <v-card-actions>
                           <v-spacer></v-spacer>
@@ -261,7 +262,8 @@
                           Project added scessfully!
                         </v-card-title>
                         <v-card-text
-                          >Now, you have to reload the page to fetch your changes.</v-card-text
+                          >Now, you have to reload the page to fetch your
+                          changes.</v-card-text
                         >
                         <v-card-actions>
                           <v-spacer></v-spacer>
@@ -329,9 +331,7 @@
           </v-card>
 
           <v-card v-else>
-            <h1>
-              Please select a project first.
-            </h1>
+            <h1>Please select a project first.</h1>
           </v-card>
         </v-sheet>
       </v-col>
@@ -443,18 +443,28 @@ function handleReload() {
 onMounted(async () => {
   await getHead().then((data) => {
     for (let i in data) {
-      head.value.push(data[i]);
+      head.value.push({
+        name: data[i].name,
+        role: data[i].role,
+        profilePicture: data[i].profilePicture,
+      });
     }
   });
+
   await getProjects().then((data) => {
     for (let i in data) {
-      projects.value.push(data[i]);
+      const d = data[i];
+      projects.value.push({
+        name: d.name,
+        description: d.description,
+        coverImage: d.coverImage,
+        members: d.members,
+        id: d.id,
+      });
     }
   });
   loading.value = false;
 });
-
-
 </script>
 
 <style scoped>
