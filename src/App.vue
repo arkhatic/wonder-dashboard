@@ -1,40 +1,21 @@
 <template>
-  <v-card v-if="!loggedIn">
-    <!-- login page -->
-    <v-card-title class="text-center">
-      <h1 class="display-1">Login</h1>
-    </v-card-title>
+  <div v-if="!loggedIn" class="complete" >
+    <div class="loginContainer">
+      <h1>Bem vindo(a)!</h1>
+      <p>Por favor, faça login para continuar.</p>
 
-    <v-card-text>
-      <v-form ref="form" v-model="valid" lazy-validation>
-        <v-text-field
-          v-model="email"
-          :rules="emailRules"
-          label="E-mail"
-          required
-        ></v-text-field>
-
-        <v-text-field
-          v-model="password"
-          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-          :rules="passwordRules"
-          :type="showPassword ? 'text' : 'password'"
-          label="Password"
-          required
-          @click:append="showPassword = !showPassword"
-        ></v-text-field>
-
-        <v-btn
-          color="success"
-          class="white--text"
-          :disabled="!valid"
-          @click="loginHandler"
-        >
-          Login
-        </v-btn>
-
-      </v-form>
-    </v-card-text>
+      <form>
+        <div>
+          <input type="email" id="email" v-model="email" placeholder="Email" />
+        </div>
+        <div>
+          <input type="password" id="password" v-model="password" placeholder="Senha" />
+        </div>
+        <div>
+          <button type="button" @click="loginHandler">Login</button>
+        </div>
+      </form>
+    </div>
 
     <v-snackbar v-model="snackbar" color="success">
       Login successful!
@@ -55,11 +36,11 @@
         </v-btn>
       </template>
     </v-snackbar>
-  </v-card>
+  </div>
 
   <v-card v-else-if="loggedIn">
     <v-layout>
-      <v-navigation-drawer expand-on-hover rail permanent>
+      <v-navigation-drawer fixed permanent>
         <v-list>
           <v-list-item
             prepend-icon="mdi-account-circle"
@@ -129,17 +110,16 @@ const passwordRules = ref([
 ]);
 
 const loginHandler = async () => {
-  if (valid.value) {
-    login(email.value, password.value).then((res) => {
-      console.log(res);
-      if (res) {
-        loggedIn.value = true;
-        snackbar.value = true;
-      }
-    }).catch((err) => {
-      snackbarError.value = true;
-    });
-  }
+  login(email.value, password.value).then((res) => {
+    console.log(res);
+    if (res) {
+      loggedIn.value = true;
+      snackbar.value = true;
+    }
+  }).catch((err) => {
+    snackbarError.value = true;
+  });
+
 };
 
 const snackbarText = ref("Wrong e-mail or password");
@@ -156,8 +136,56 @@ onMounted(() => {
 </script>
 
 <style scoped>
+* {
+  transition: all .3s;
+}
+
 a {
   text-decoration: none;
   color: inherit
+}
+
+.complete {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+form input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  background: #282828;
+  border-radius: 5px;
+}
+
+form button {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  background: #282828;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+}
+
+form button:hover, form input:hover {
+  background: #303030;
+}
+
+form button:focus, form input:focus {
+  outline: none;
+}
+
+.loginContainer {
+  width: 70%;
+  height: fit;
+}
+
+.loginContainer h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 0;
 }
 </style>

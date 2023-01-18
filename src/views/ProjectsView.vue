@@ -53,78 +53,83 @@
     </template>
   </v-snackbar>
 
-  <v-container>
-    <v-row>
-      <v-col cols="2">
-        <v-sheet rounded="lg">
-          <v-list rounded="lg">
-            <v-list-subheader>
-              <v-icon>mdi-projector-screen</v-icon>
-              Projects list
-            </v-list-subheader>
+  <div class="container">
+    <div class="projectsSelectorContainer">
+      <v-list rounded="lg">
+        <v-list-subheader>
+          <v-icon>mdi-projector-screen</v-icon>
+          Projetos
+        </v-list-subheader>
 
-            <v-list-item
-              v-for="(project, i) in projects"
-              :key="project.name"
-              :title="project.name"
-              :value="project.name"
-              @click="selectProject(i)"
-            ></v-list-item>
+        <v-list-item
+          v-for="(project, i) in projects"
+          :key="project.name"
+          :title="project.name"
+          :value="project.name"
+          @click="selectProject(i)"
+        ></v-list-item>
 
-            <v-divider></v-divider>
+        <v-divider></v-divider>
 
-            <v-list-item
-              prepend-icon="mdi-plus"
-              title="Add new project"
-              value="addNewProject"
-              @click="addNewProject"
-            ></v-list-item>
-          </v-list>
-        </v-sheet>
-      </v-col>
+        <v-list-item
+          prepend-icon="mdi-plus"
+          title="Novo projeto"
+          value="addNewProject"
+          @click="addNewProject"
+        >
+        </v-list-item>
+      </v-list>
+      <!-- </div> -->
+    </div>
 
-      <v-col v-if="!loading">
-        <v-sheet rounded="lg" class="bg-grey-darken-4" style="height: 90vh">
-          <v-card v-if="index >= 0" class="mx-auto pt-4 overflow-auto h-100">
+    
+    <div class="projectsContainer" >
+      <div v-if="loading" class="projectContentContainer">
+        <v-progress-circular indeterminate></v-progress-circular>
+      </div>
+
+      <div v-if="!loading" class="projectContentContainer">
+        <div v-if="index >= 0" class="projectContentWrapper">
+          <div class="projectContent">
             <v-card-title
-              class="text-h6 font-weight-regular justify-space-between"
+              class="text-h6 font-weight-regular justify-space-between mt-2"
             >
               <h1>{{ projects[index].name }}</h1>
+              <span class="text-caption text-grey-darken-1">
+                ID: {{ projects[index].id }}
+              </span>
             </v-card-title>
 
-            <v-window class="overflow-auto" v-model="step">
-              <v-window-item :value="1" class="overflow-auto">
-                <v-card-text class="overflow-auto">
-                  <h2>{{ projects[index].description }}</h2>
-                  <span class="text-caption text-grey-darken-1">
-                    {{ projects[index].id }}
-                  </span>
+            <v-divider></v-divider>
+            <div class="window">
+              <v-window class="overflow-y" v-model="step">
+                <v-window-item :value="1" class="overflow-auto">
+                  <v-card-text class="overflow-auto">
+                    <h2>{{ projects[index].description }}</h2>
+                    <span class="text-caption text-grey-darken-1">
+                      Descrição do projeto
+                    </span>
 
-                  <v-divider class="my-4"></v-divider>
+                    <v-divider class="my-4"></v-divider>
 
-                  <v-img :src="projects[index].coverImage"></v-img>
-                  <span class="text-caption text-grey-darken-1">
-                    Project cover image.
-                  </span>
+                    <v-img class="coverImage" :src="projects[index].coverImage"></v-img>
+                    <span class="text-caption text-grey-darken-1">
+                      Imagem do projeto
+                    </span>
 
-                  <v-divider class="my-4"></v-divider>
+                    <v-divider class="my-4"></v-divider>
 
-                  <v-card
-                    class="mx-auto pt-4 overflow-auto bg-grey-darken-3"
-                    elevation="2"
-                  >
-                    <v-card-title
-                      class="text-h6 font-weight-regular justify-space-between"
+                    <div
+                      elevation="2"
+                      class="membersWrapper"
                     >
-                      <h2>Project members</h2>
-                    </v-card-title>
-
-                    <v-window class="overflow-auto">
-                      <v-window-item :value="1" class="overflow-auto">
-                        <v-card-text class="overflow-auto">
-                          <v-list rounded="lg">
+                      <h2>Membros do projeto</h2>
+                      <v-window class="overflow-auto">
+                        <v-window-item :value="1" class="overflow-auto">
+                          <v-list>
                             <v-list-item
-                              v-for="member in projects[index].members"
+                              selectable="false"
+                              v-for="(member, i) in projects[index].members"
                               :key="member.name"
                               :value="member.name"
                             >
@@ -134,7 +139,7 @@
                                 no-gutters
                               >
                                 <v-col cols="3" sm="2" md="1">
-                                  <v-avatar size="48px">
+                                  <v-avatar size="36px">
                                     <v-img
                                       alt="Avatar"
                                       :src="member.profilePicture"
@@ -158,138 +163,139 @@
                                   <v-chip class="ml-0 mr-2" label small>
                                     {{ member.role }}
                                   </v-chip>
-                                  <!-- <strong v-html="member.title"></strong> -->
                                 </v-col>
                               </v-row>
+                              <v-divider v-if="i < projects.length" class="my-2" ></v-divider>
                             </v-list-item>
                           </v-list>
-                        </v-card-text>
-                      </v-window-item>
-                    </v-window>
-                  </v-card>
-                </v-card-text>
-              </v-window-item>
+                        </v-window-item>
+                      </v-window>
+                    </div>
+                  </v-card-text>
+                </v-window-item>
 
-              <v-window-item :value="2">
-                <v-card-text>
-                  <v-text-field
-                    label="New project name"
-                    :placeholder="projects[index].name"
-                    type="text"
-                    v-model="projects[index].name"
-                  ></v-text-field>
-                  <v-text-field
-                    label="New project description"
-                    type="text"
-                    :placeholder="projects[index].description"
-                    v-model="projects[index].description"
-                  ></v-text-field>
-                  <v-text-field
-                    label="New project cover image link"
-                    type="text"
-                    :placeholder="projects[index].coverImage"
-                    v-model="projects[index].coverImage"
-                  ></v-text-field>
+                <v-window-item :value="2">
+                  <v-card-text>
+                    <v-text-field
+                      label="New project name"
+                      :placeholder="projects[index].name"
+                      type="text"
+                      v-model="projects[index].name"
+                    ></v-text-field>
+                    <v-text-field
+                      label="New project description"
+                      type="text"
+                      :placeholder="projects[index].description"
+                      v-model="projects[index].description"
+                    ></v-text-field>
+                    <v-text-field
+                      label="New project cover image link"
+                      type="text"
+                      :placeholder="projects[index].coverImage"
+                      v-model="projects[index].coverImage"
+                    ></v-text-field>
 
-                  <v-list select-strategy="single-independent">
+                    <v-list select-strategy="single-independent">
+                      <v-btn
+                        color="primary"
+                        class="white--text"
+                        @click="addNewMember()"
+                      >
+                        <v-icon class="mr-3">mdi-plus</v-icon>
+                        Add new member
+                      </v-btn>
+
+                      <v-list-item
+                        v-for="(member, i) in projects[index].members"
+                        class="mt-5 py-4 rounded bg-secondary"
+                        :key="i"
+                        :value="i"
+                      >
+                        <v-list-item-subtitle class="mb-2"
+                          >Member {{ i + 1 }}</v-list-item-subtitle
+                        >
+
+                        <v-text-field
+                          label="Member name"
+                          type="text"
+                          v-model="member.name"
+                        ></v-text-field>
+
+                        <v-text-field
+                          label="Member avatar"
+                          type="text"
+                          v-model="member.profilePicture"
+                        ></v-text-field>
+
+                        <v-text-field
+                          label="Member role"
+                          type="text"
+                          v-model="member.role"
+                        ></v-text-field>
+
+                        <v-btn
+                          color="error"
+                          class="white--text h-full"
+                          @click="deleteMember(i)"
+                        >
+                          <v-icon class="mr-3">mdi-delete</v-icon>
+                          Remove member
+                        </v-btn>
+                      </v-list-item>
+                    </v-list>
+                  </v-card-text>
+                </v-window-item>
+
+                <v-window-item :value="3">
+                  <div class="areYouSure">
+                    <div>
+                      <h1>Are you sure you want to edit the project?</h1>
+                      <v-btn
+                        color="success"
+                        class="white--text mr-4"
+                        @click="saveProject()"
+                      >
+                        <v-icon class="mr-3">mdi-grease-pencil</v-icon>
+                        Yes I am.
+                      </v-btn>
+
+                      <v-btn color="error" class="white--text" @click="step--">
+                        <v-icon class="mr-3">mdi-chevron-left</v-icon>
+                        No, I am not.
+                      </v-btn>
+                    </div>
+                  </div>
+                </v-window-item>
+
+                <v-window-item :value="4">
+                  <div class="pa-4 h-100 text-center">
+                    <h1>
+                      Are you sure you want to <strong>delete</strong> this
+                      project?
+                    </h1>
+
                     <v-btn
-                      color="primary"
-                      class="white--text"
-                      @click="addNewMember()"
+                      color="error"
+                      class="white--text mr-4"
+                      @click="deleteExistingProject(projects[index].id)"
                     >
-                      <v-icon class="mr-3">mdi-plus</v-icon>
-                      Add new member
+                      <v-icon class="mr-3">mdi-delete</v-icon>
+                      Yes I am.
                     </v-btn>
 
-                    <!-- make item not selectable -->
+                    <v-btn color="success" class="white--text" @click="step -= 2">
+                      <v-icon class="mr-3">mdi-chevron-left</v-icon>
+                      No, I am not.
+                    </v-btn>
+                  </div>
+                </v-window-item>
+              </v-window>
+            </div>
 
-                    <v-list-item
-                      v-for="(member, i) in projects[index].members"
-                      class="mt-5 py-4 rounded bg-secondary"
-                      :key="i"
-                      :value="i"
-                    >
-                      <v-list-item-subtitle class="mb-2"
-                        >Member {{ i + 1 }}</v-list-item-subtitle
-                      >
+          </div>
 
-                      <v-text-field
-                        label="Member name"
-                        type="text"
-                        v-model="member.name"
-                      ></v-text-field>
-
-                      <v-text-field
-                        label="Member avatar"
-                        type="text"
-                        v-model="member.profilePicture"
-                      ></v-text-field>
-
-                      <v-text-field
-                        label="Member role"
-                        type="text"
-                        v-model="member.role"
-                      ></v-text-field>
-
-                      <v-btn
-                        color="error"
-                        class="white--text h-full"
-                        @click="deleteMember(i)"
-                      >
-                        <!-- trash bin icon -->
-                        <v-icon class="mr-3">mdi-delete</v-icon>
-                        Remove member
-                      </v-btn>
-                    </v-list-item>
-                  </v-list>
-                </v-card-text>
-              </v-window-item>
-
-              <v-window-item :value="3">
-                <div class="pa-4 h-100 text-center">
-                  <h1>Are you sure you want to edit the project?</h1>
-                  <v-btn
-                    color="success"
-                    class="white--text mr-4"
-                    @click="saveProject()"
-                  >
-                    <v-icon class="mr-3">mdi-grease-pencil</v-icon>
-                    Yes I am.
-                  </v-btn>
-
-                  <v-btn color="error" class="white--text" @click="step--">
-                    <v-icon class="mr-3">mdi-chevron-left</v-icon>
-                    No, I am not.
-                  </v-btn>
-                </div>
-              </v-window-item>
-
-              <v-window-item :value="4">
-                <div class="pa-4 h-100 text-center">
-                  <h1>
-                    Are you sure you want to <strong>delete</strong> this
-                    project?
-                  </h1>
-
-                  <v-btn
-                    color="error"
-                    class="white--text mr-4"
-                    @click="deleteExistingProject(projects[index].id)"
-                  >
-                    <v-icon class="mr-3">mdi-delete</v-icon>
-                    Yes I am.
-                  </v-btn>
-
-                  <v-btn color="success" class="white--text" @click="step -= 2">
-                    <v-icon class="mr-3">mdi-chevron-left</v-icon>
-                    No, I am not.
-                  </v-btn>
-                </div>
-              </v-window-item>
-            </v-window>
-
+          <div class="projectActions">
             <v-divider></v-divider>
-
             <v-card-actions>
               <v-btn
                 v-if="step === 2"
@@ -325,15 +331,15 @@
                 Done
               </v-btn>
             </v-card-actions>
-          </v-card>
+          </div>
+        </div>
 
-          <v-card v-else class="text-center h-full w-full">
-            <h1>Please select a project first.</h1>
-          </v-card>
-        </v-sheet>
-      </v-col>
-    </v-row>
-  </v-container>
+        <div class="selectProjectDialog">
+          <h1>Por favor, selecione um projeto primeiro.</h1>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -484,6 +490,83 @@ onMounted(async () => {
 
 <style scoped>
 .container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+}
+
+.projectsSelectorContainer {
+  background-color: #202020;
   height: 100vh;
+  width: 300px;
+  border-right: 1px solid #303030;
+}
+
+.projectsContainer {
+  background-color: #202020;
+  height: 100vh;
+  width: 100%;
+}
+
+.projectContentContainer {
+  background-color: #202020;
+  height: 100vh;
+  width: 100%;
+}
+
+.selectProjectDialog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding: 25%;
+  text-align: center;
+  /* background error */
+  background: #404040;
+}
+
+.projectContentWrapper {
+  display: grid;
+  height: 100%;
+  /* make two columns, one of 1fr and other of 50px */
+  grid-template-rows: calc(100vh - 50px) 50px;
+}
+
+.projectContent {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.projectActions {
+  height: fit-content;
+  position: relative;
+}
+
+.window {
+  overflow: scroll;
+  height: 100%;
+  width: 100%;
+}
+
+.areYouSure {
+  height: calc(100vh - 150px);
+  padding: 0 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.areYouSure div {
+  height: fit-content;
+}
+
+.coverImage {
+  width: 100%;
+  /* max-width: 500px; */
 }
 </style>
