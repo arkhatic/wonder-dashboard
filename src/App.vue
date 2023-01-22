@@ -40,11 +40,11 @@
 
   <v-card v-else-if="loggedIn">
     <v-layout>
-      <v-navigation-drawer fixed permanent>
-        <v-list>
+      <v-navigation-drawer expand-on-hover rail permanent color="#000000">
+        <v-list density="compact" nav>
           <v-list-item
             prepend-icon="mdi-account-circle"
-            title="Welcome."
+            :title="email"
           ></v-list-item>
         </v-list>
 
@@ -54,21 +54,28 @@
           <RouterLink to="/"
             ><v-list-item
               prepend-icon="mdi-projector-screen"
-              title="Projects"
+              title="Projetos"
               value="projects"
             ></v-list-item
           ></RouterLink>
           <RouterLink to="/head"
             ><v-list-item
               prepend-icon="mdi-account-hard-hat"
-              title="Head members"
+              title="Pessoas"
               value="headMembers"
+            ></v-list-item
+          ></RouterLink>
+          <RouterLink to="/helpers"
+            ><v-list-item
+              prepend-icon="mdi-toolbox"
+              title="Outros"
+              value="helpers"
             ></v-list-item
           ></RouterLink>
         </v-list>
 
         <v-divider></v-divider>
-        <v-list density="compact">
+        <v-list density="compact" nav>
           <a href="https://wonderacidstudio-website.vercel.app/" target="_blank">
             <v-list-item
               prepend-icon="mdi-logout"
@@ -79,7 +86,7 @@
         </v-list>
       </v-navigation-drawer>
 
-      <v-main class="h-screen bg-grey-darken-3">
+      <v-main class="h-screen bgbg">
         <router-view></router-view>
       </v-main>
     </v-layout>
@@ -187,5 +194,9 @@ form button:focus, form input:focus {
   font-size: 3rem;
   font-weight: 700;
   margin: 0;
+}
+
+.bgbg {
+  background-color: #040404;
 }
 </style>

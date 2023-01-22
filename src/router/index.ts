@@ -14,6 +14,11 @@ const router = createRouter({
       name: 'HeadView',
       component: () => import('@/views/HeadView.vue'),
     },
+    {
+      path: '/helpers',
+      name: 'HelpersView',
+      component: () => import('@/views/HelpersView.vue'),
+    }
   ],
 })
 

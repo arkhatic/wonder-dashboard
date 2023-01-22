@@ -1,5 +1,11 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, setDoc, DocumentData } from 'firebase/firestore';
+import { 
+  getFirestore, 
+  collection, query, where,
+  getDoc, getDocs, addDoc, deleteDoc, doc, setDoc, DocumentData 
+} from 'firebase/firestore';
+
+import { Project, Member, projectBoilerplate, memberBoilerplate } from '../helpers/interfaces';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDOq0Rpfe1ro7X5Eixfpxq4zUQV-YKKX80",
@@ -15,65 +21,40 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 
-// data structure
-// member -> name, role, profileImage
-// head -> head -> members -> [member]
-// teams -> toTheMoon -> name, description, coverImage, members -> [member]
-
-
-interface Member {
-  name: string;
-  role: string;
-  profilePicture: string;
-}
-
-interface HeadMember {
-  name: string;
-  role: string;
-  profilePicture: string;
-  id: string
-}
-
-interface Project {
-  name: string;
-  description: string;
-  coverImage: string;
-  members: Member[];
-}
-
-interface NewProject {
-  name: string;
-  description: string;
-  coverImage: string;
-  members: Member[];
-  id: string
-}
-
-
-// head members operations
-async function addMember(member: Member): Promise<string> {
-  const docRef = await addDoc(collection(db, "head"), member);
+// members operations
+async function addMember(): Promise<string> {
+  const docRef = await addDoc(collection(db, "members"), memberBoilerplate);
   return docRef.id;
 }
 
-async function saveMember(member: HeadMember) {
-  // remove old member;
+async function saveMember(member: Member) {
+  console.log(member);
+
   await deleteMember(member.id);
-  const docRef = await setDoc(doc(db, 'head', member.id), {
+  const docRef = await setDoc(doc(db, 'members', member.id), {
+    id: member.id,
+    verified: member.verified,
+    head: member.head,
+    email: member.email,
     name: member.name,
-    role: member.role,
-    profilePicture: member.profilePicture
+    age: member.age,
+    profilePicture: member.profilePicture,
+    pronouns: member.pronouns,
+    about: member.about,
+    roles: member.roles,
+    links: member.links,
+    images: member.images
   });
   return docRef;
 }
 
 async function deleteMember(id: string) {
-  await deleteDoc(doc(db, 'head', id));
+  await deleteDoc(doc(db, 'members', id));
   return id;
 }
 
 async function getMemberId(name: string): Promise<string> {
-  const querySnapshot = await getDocs(collection(db, 'head'));
+  const querySnapshot = await getDocs(collection(db, 'members'));
   let id = '';
   querySnapshot.forEach((doc) => {
     if (doc.data().name === name) {
@@ -83,15 +64,20 @@ async function getMemberId(name: string): Promise<string> {
   return id;
 }
 
+async function getMember(id: string): Promise<Member> {
+  const docRef = doc(db, 'members', id);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    return docSnap.data() as Member;
+  } else {
+    return {} as Member;
+  }
+}
+
 
 // projects operations
-async function addProject(project: Project): Promise<string> {
-  const docRef = await addDoc(collection(db, 'teams'), {
-    name: project.name,
-    description: project.description,
-    coverImage: project.coverImage,
-    members: project.members
-  });
+async function addProject(): Promise<string> {
+  const docRef = await addDoc(collection(db, 'teams'), projectBoilerplate);
   return docRef.id;
 }
 
@@ -111,40 +97,125 @@ async function getProjectId(name: string): Promise<string> {
   return id;
 }
 
-async function editProject(project: NewProject) {
+async function editProject(project: Project) {
   const docRef = doc(db, 'teams', project.id);
   await deleteDoc(docRef);
   const addedDoc = await setDoc(doc(db, 'teams', project.id), {
     name: project.name,
     description: project.description,
+    descriptionPortuguese: project.descriptionPortuguese,
     coverImage: project.coverImage,
     members: project.members
   });
   return addedDoc;
 }
 
-const getHead = async () => {
-  const querySnapshot = await getDocs(collection(db, "head"));
-  var head: DocumentData[] = [];
+const getMembers = async () => {
+  const querySnapshot = await getDocs(collection(db, "members"));
+  var members: DocumentData[] = [];
   querySnapshot.forEach((doc) => {
-    head.push(doc.data());
+    members.push(doc.data());
   });
-  return head;
+  return members;
 }
 
 const getProjects = async () => {
   const querySnapshot = await getDocs(collection(db, 'teams'));
-  let lead: DocumentData[] = [];
+  let project: DocumentData[] = [];
   querySnapshot.forEach((doc) => {
-    lead.push(doc.data());
+    project.push(doc.data());
   });
-  return lead;
+  return project;
 }
+
+const checkIfVerified = async (id: string) => {
+  const querySnapshot = await getDocs(collection(db, 'members'));
+  let verified;
+  querySnapshot.forEach((doc) => {
+    verified = doc.data().verified;
+  });
+  return verified;
+}
+
+const checkIfHead = async (id: string) => {
+  const querySnapshot = await getDocs(collection(db, 'members'));
+  let head;
+  querySnapshot.forEach((doc) => {
+    head = doc.data().head;
+  });
+  return head;
+}
+
+// helpers operations
+async function getAllRoles() {
+  const querySnapshot = await getDocs(collection(db, 'helpers'));
+  let roles: DocumentData[] = [];
+  querySnapshot.forEach((doc) => {
+    roles.push(doc.data());
+  });
+  return roles;
+}
+
+async function editRoles(id: string, roles: string[]) {
+  const docRef = doc(db, 'helpers', id);
+  await deleteDoc(docRef);
+  const addedDoc = await setDoc(doc(db, 'helpers', id), {
+    roles: roles
+  });
+  return addedDoc;
+}
+
+async function getAllTexts() {
+  const querySnapshot = await getDocs(collection(db, 'texts'));
+  let texts: DocumentData[] = [];
+  querySnapshot.forEach((doc) => {
+    texts.push(doc.data());
+  });
+  return texts;
+}
+
+async function getContactText() {
+  const querySnapshot = await getDocs(query(collection(db, 'texts'), where('id', '==', 'contactUsView')));
+  let texts: DocumentData[] = [];
+  querySnapshot.forEach((doc) => {
+    texts.push(doc.data());
+  });
+  return texts;
+}
+
+async function getJoinText() {
+  const querySnapshot = await getDocs(query(collection(db, 'texts'), where('id', '==', 'joinUsView')));
+  let texts: DocumentData[] = [];
+  querySnapshot.forEach((doc) => {
+    texts.push(doc.data());
+  });
+  return texts;
+}
+
+async function getTeamText() {
+  const querySnapshot = await getDocs(query(collection(db, 'texts'), where('id', '==', 'teamView')));
+  let texts: DocumentData[] = [];
+  querySnapshot.forEach((doc) => {
+    texts.push(doc.data());
+  });
+  return texts;
+}
+
+
+
+async function editText(id: string, text: { [key: string]: string; }) {
+  const docRef = doc(db, 'texts', id);
+  await deleteDoc(docRef);
+  const addedDoc = await setDoc(doc(db, 'texts', id), text);
+  return addedDoc;
+}
+
 
 export {
   app,
-  addMember, deleteMember, saveMember, getMemberId,
-  addProject, editProject, deleteProject, getProjectId,
-  getHead, getProjects,
-  NewProject, Project, Member, HeadMember
+  getMember, getMembers, addMember, deleteMember, saveMember, getMemberId,
+  getProjects, addProject, editProject, deleteProject, getProjectId,
+  checkIfVerified, checkIfHead,
+  getAllRoles, getAllTexts, editRoles, editText,
+  getContactText, getJoinText, getTeamText
 };

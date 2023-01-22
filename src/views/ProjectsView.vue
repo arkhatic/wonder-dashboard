@@ -1,77 +1,52 @@
 <template>
   <v-snackbar v-model="snackbarAdd" :timeout="3000" color="success">
-    Project added successfully!
+    Projeto adicionado com sucesso!
 
     <template v-slot:actions>
       <v-btn color="success" variant="flat" @click="snackbarAdd = false">
-        Close
-      </v-btn>
-    </template>
-  </v-snackbar>
-  <v-snackbar v-model="snackbarMemberAdded" :timeout="1000" color="success">
-    Member added successfully!
-
-    <template v-slot:actions>
-      <v-btn
-        color="success"
-        variant="flat"
-        @click="snackbarMemberAdded = false"
-      >
-        Close
-      </v-btn>
-    </template>
-  </v-snackbar>
-  <v-snackbar v-model="snackbarMemberDeleted" :timeout="1000" color="error">
-    Member deleted successfully!
-
-    <template v-slot:actions>
-      <v-btn
-        color="error"
-        variant="flat"
-        @click="snackbarMemberDeleted = false"
-      >
-        Close
+        Fechar
       </v-btn>
     </template>
   </v-snackbar>
   <v-snackbar v-model="snackbarSaved" :timeout="3000" color="success">
-    Project saved successfully!
+    Projeto salvo com sucesso!
 
     <template v-slot:actions>
       <v-btn color="success" variant="flat" @click="snackbarSaved = false">
-        Close
+        Fechar
       </v-btn>
     </template>
   </v-snackbar>
   <v-snackbar v-model="snackbarDeleted" :timeout="3000" color="error">
-    Project deleted successfully!
+    Projeto deletado com sucesso!
 
     <template v-slot:actions>
       <v-btn color="error" variant="flat" @click="snackbarDeleted = false">
-        Close
+        Fechar
       </v-btn>
     </template>
   </v-snackbar>
 
   <div class="container">
-    <div class="projectsSelectorContainer">
-      <v-list rounded="lg">
-        <v-list-subheader>
-          <v-icon>mdi-projector-screen</v-icon>
-          Projetos
-        </v-list-subheader>
-
+    <v-navigation-drawer permanent color="#000000" class="projectsSelectorContainer">
+      <v-list rounded="lg" density="compact" nav>
         <v-list-item
+        
+          nav density="compact"
+          class="selectorText"
           v-for="(project, i) in projects"
           :key="project.name"
           :title="project.name"
           :value="project.name"
+          prepend-icon="mdi-projector-screen"
           @click="selectProject(i)"
-        ></v-list-item>
+        >
+        </v-list-item>
 
         <v-divider></v-divider>
 
         <v-list-item
+          nav density="compact"
           prepend-icon="mdi-plus"
           title="Novo projeto"
           value="addNewProject"
@@ -79,8 +54,7 @@
         >
         </v-list-item>
       </v-list>
-      <!-- </div> -->
-    </div>
+    </v-navigation-drawer>
 
     
     <div class="projectsContainer" >
@@ -112,64 +86,37 @@
 
                     <v-divider class="my-4"></v-divider>
 
-                    <v-img class="coverImage" :src="projects[index].coverImage"></v-img>
+                    <img class="coverImage" :src="projects[index].coverImage" />
+                    <br />
                     <span class="text-caption text-grey-darken-1">
                       Imagem do projeto
                     </span>
 
                     <v-divider class="my-4"></v-divider>
 
+                    <h2>Membros do projeto</h2>
                     <div
                       elevation="2"
                       class="membersWrapper"
                     >
-                      <h2>Membros do projeto</h2>
-                      <v-window class="overflow-auto">
-                        <v-window-item :value="1" class="overflow-auto">
-                          <v-list>
-                            <v-list-item
-                              selectable="false"
-                              v-for="(member, i) in projects[index].members"
-                              :key="member.name"
-                              :value="member.name"
-                            >
-                              <v-row
-                                align="center"
-                                class="spacer rounded"
-                                no-gutters
-                              >
-                                <v-col cols="3" sm="2" md="1">
-                                  <v-avatar size="36px">
-                                    <v-img
-                                      alt="Avatar"
-                                      :src="member.profilePicture"
-                                    ></v-img>
-                                  </v-avatar>
-                                </v-col>
+                      <div
+                        class="memberCard"
+                        v-for="(member, i) in projectMembers"
+                        :key="member.name"
+                      >
+                        <img :src="member.profilePicture" />
 
-                                <v-col
-                                  class="hidden-xs-only text-left ml-2"
-                                  sm="5"
-                                  md="3"
-                                >
-                                  <strong v-html="member.name"></strong>
-                                </v-col>
+                        <h3>{{ member.name }}</h3>
 
-                                <v-col
-                                  class="text-no-wrap text-left"
-                                  cols="5"
-                                  sm="3"
-                                >
-                                  <v-chip class="ml-0 mr-2" label small>
-                                    {{ member.role }}
-                                  </v-chip>
-                                </v-col>
-                              </v-row>
-                              <v-divider v-if="i < projects.length" class="my-2" ></v-divider>
-                            </v-list-item>
-                          </v-list>
-                        </v-window-item>
-                      </v-window>
+
+                        <div>
+                          <v-chip
+                            style="margin: 5px 5px 0 0;"
+                          >
+                            {{ member.roles[0] }}
+                          </v-chip>
+                        </div>
+                      </div>
                     </div>
                   </v-card-text>
                 </v-window-item>
@@ -177,91 +124,83 @@
                 <v-window-item :value="2">
                   <v-card-text>
                     <v-text-field
-                      label="New project name"
+                      label="Nome do projeto"
                       :placeholder="projects[index].name"
                       type="text"
                       v-model="projects[index].name"
                     ></v-text-field>
                     <v-text-field
-                      label="New project description"
+                      label="Descrição do projeto em inglês"
                       type="text"
                       :placeholder="projects[index].description"
                       v-model="projects[index].description"
                     ></v-text-field>
                     <v-text-field
-                      label="New project cover image link"
+                      label="Descrição do projeto em português"
+                      type="text"
+                      :placeholder="projects[index].descriptionPortuguese"
+                      v-model="projects[index].descriptionPortuguese"
+                    ></v-text-field>
+                    <v-text-field
+                      label="Link da imagem do projeto"
                       type="text"
                       :placeholder="projects[index].coverImage"
                       v-model="projects[index].coverImage"
                     ></v-text-field>
+                    
+                    <!-- make a selectable members area -->
+                    <v-divider class="my-4"></v-divider>
 
-                    <v-list select-strategy="single-independent">
-                      <v-btn
-                        color="primary"
-                        class="white--text"
-                        @click="addNewMember()"
-                      >
-                        <v-icon class="mr-3">mdi-plus</v-icon>
-                        Add new member
-                      </v-btn>
+                    <v-autocomplete
+                      v-model="membersToAdd"
+                      :items="members"
+                      chips
+                      closable-chips
+                      color="blue-grey-lighten-2"
+                      item-title="name"
+                      item-value="name"
+                      label="Selecione os membros do projeto"
+                      multiple
+                    >
+                      <template v-slot:chip="{ props, item }">
+                        <v-chip
+                          v-bind="props"
+                          :prepend-avatar="item.raw.profilePicture"
+                          :text="item.raw.name"
+                        ></v-chip>
+                      </template>
 
-                      <v-list-item
-                        v-for="(member, i) in projects[index].members"
-                        class="mt-5 py-4 rounded bg-secondary"
-                        :key="i"
-                        :value="i"
-                      >
-                        <v-list-item-subtitle class="mb-2"
-                          >Member {{ i + 1 }}</v-list-item-subtitle
-                        >
+                      <template v-slot:item="{ props, item }">
+                        <v-list-item
+                          v-bind="props"
+                          :prepend-avatar="item?.raw?.profilePicture"
+                          :title="item?.raw?.name"
+                          :subtitle="item?.raw?.roles[0]"
+                        ></v-list-item>
+                      </template>
+                    </v-autocomplete>
 
-                        <v-text-field
-                          label="Member name"
-                          type="text"
-                          v-model="member.name"
-                        ></v-text-field>
 
-                        <v-text-field
-                          label="Member avatar"
-                          type="text"
-                          v-model="member.profilePicture"
-                        ></v-text-field>
-
-                        <v-text-field
-                          label="Member role"
-                          type="text"
-                          v-model="member.role"
-                        ></v-text-field>
-
-                        <v-btn
-                          color="error"
-                          class="white--text h-full"
-                          @click="deleteMember(i)"
-                        >
-                          <v-icon class="mr-3">mdi-delete</v-icon>
-                          Remove member
-                        </v-btn>
-                      </v-list-item>
-                    </v-list>
+                    
                   </v-card-text>
                 </v-window-item>
 
                 <v-window-item :value="3">
                   <div class="areYouSure">
                     <div>
-                      <h1>Are you sure you want to edit the project?</h1>
+                      <h1>Tem certeza que deseja editar este projeto?</h1>
                       <v-btn
                         color="success"
                         class="white--text mr-4"
                         @click="saveProject()"
                       >
                         <v-icon class="mr-3">mdi-grease-pencil</v-icon>
-                        Yes I am.
+                        Sim.
                       </v-btn>
 
                       <v-btn color="error" class="white--text" @click="step--">
                         <v-icon class="mr-3">mdi-chevron-left</v-icon>
-                        No, I am not.
+                        Não.
                       </v-btn>
                     </div>
                   </div>
@@ -270,8 +209,7 @@
                 <v-window-item :value="4">
                   <div class="pa-4 h-100 text-center">
                     <h1>
-                      Are you sure you want to <strong>delete</strong> this
-                      project?
+                      Tem certeza que deseja <strong>deletar</strong> este projeto?
                     </h1>
 
                     <v-btn
@@ -280,12 +218,12 @@
                       @click="deleteExistingProject(projects[index].id)"
                     >
                       <v-icon class="mr-3">mdi-delete</v-icon>
-                      Yes I am.
+                      Sim.
                     </v-btn>
 
                     <v-btn color="success" class="white--text" @click="step -= 2">
                       <v-icon class="mr-3">mdi-chevron-left</v-icon>
-                      No, I am not.
+                      Não.
                     </v-btn>
                   </div>
                 </v-window-item>
@@ -346,19 +284,20 @@
 import { ref, onMounted } from "vue";
 import {
   getProjects,
-  getHead,
+  getMembers,
+  getMember,
+  getMemberId,
   addProject,
-  Member,
-  Project,
-  NewProject,
   editProject,
   deleteProject,
   getProjectId,
 } from "@/database";
+import { Project, Member } from "../helpers/interfaces";
 import { DocumentData } from "@firebase/firestore";
 
-const projects = ref<NewProject[]>([]);
-const head = ref<Member[]>([]);
+// custom variables
+const projects = ref<Project[]>([]);
+const members = ref<Member[]>([]);
 const loading = ref(true);
 const index = ref<number>(-1);
 
@@ -368,47 +307,26 @@ const snackbarDeleted = ref(false);
 const snackbarMemberAdded = ref(false);
 const snackbarMemberDeleted = ref(false);
 
+const projectMembers = ref<Member[]>([]);
+const membersToAdd = ref<string[]>([]);
+
 const step = ref(1);
 
-const projectBoilerplate: Project = {
-  name: "Project name",
-  description: "A brief description about the project.",
-  coverImage: "The link for the cover image.",
-  members: [
-    {
-      name: 'Name "Nickname"',
-      profilePicture:
-        "https://aniyuki.com/wp-content/uploads/2022/03/aniyuki-anime-girl-avatar-51.jpg",
-      role: "Role Role",
-    },
-  ],
-};
-
+// custom methods
 function addNewProject() {
-  const newProjectRef = addProject(projectBoilerplate);
+  const newProjectRef = addProject();
   newProjectRef.then((id) => {
     projects.value.push({
-      ...projectBoilerplate,
       id: id,
+      name: "",
+      description: "",
+      descriptionPortuguese: "",
+      coverImage: "",
+      members: [],
     });
-    index.value = projects.value.length - 1;
+    selectProject(projects.value.length - 1);
   });
   snackbarAdd.value = true;
-}
-
-function addNewMember() {
-  projects.value[index.value].members.push({
-    name: 'Name "Nickname"',
-    profilePicture:
-      "https://aniyuki.com/wp-content/uploads/2022/03/aniyuki-anime-girl-avatar-51.jpg",
-    role: "Role",
-  });
-  snackbarMemberAdded.value = true;
-}
-
-function deleteMember(indexMember: number) {
-  projects.value[index.value].members.splice(indexMember, 1);
-  snackbarMemberDeleted.value = true;
 }
 
 function deleteExistingProject(id: string) {
@@ -421,13 +339,29 @@ function deleteExistingProject(id: string) {
 
 function saveProject() {
   snackbarSaved.value = true;
+
+  let membersIds: string[] = [];
+
+  for (let i in membersToAdd.value) {
+    getMemberId(membersToAdd.value[i]).then((member) => {
+      membersIds.push(member);
+    })
+  }
+
+  console.log(membersToAdd)
+  console.log(membersIds)
+
+
   editProject({
+    id: projects.value[index.value].id,
     name: projects.value[index.value].name,
     description: projects.value[index.value].description,
+    descriptionPortuguese: projects.value[index.value].descriptionPortuguese,
     coverImage: projects.value[index.value].coverImage,
-    members: projects.value[index.value].members,
-    id: projects.value[index.value].id,
+    members: membersIds,
   });
+
+  projects.value[index.value].members = membersIds;
 
   step.value = -1;
   index.value = -1;
@@ -436,35 +370,40 @@ function saveProject() {
 function selectProject(i: number) {
   step.value = 1;
   index.value = i;
+
+  membersToAdd.value = [];
+  projectMembers.value = [];
+
+  for (let i in projects.value[index.value].members) {
+    getMember(projects.value[index.value].members[i]).then((member) => {
+      membersToAdd.value.push(member.name);
+      projectMembers.value.push(member);
+    });
+  }
 }
 
-const newProject = ref<NewProject>({
-  name: "Name",
-  description: "Description",
-  coverImage:
-    "https://assets.hongkiat.com/uploads/minimalist-dekstop-wallpapers/4k/original/14.jpg",
-  members: [
-    {
-      name: 'Name "Nickname"',
-      profilePicture:
-        "https://aniyuki.com/wp-content/uploads/2022/03/aniyuki-anime-girl-avatar-51.jpg",
-      role: "Role",
-    },
-  ],
-  id: "",
-});
-
-function handleReload() {
-  window.location.reload();
-}
-
+// vue methods
 onMounted(async () => {
-  await getHead().then((data) => {
+  await getMembers().then((data) => {
     for (let i in data) {
-      head.value.push({
+      members.value.push({
+        id: data[i].id,
+        verified: data[i].verified,
+        head: data[i].head,
+        email: data[i].email,
+
         name: data[i].name,
-        role: data[i].role,
+        pronouns: data[i].pronouns,
+        age: data[i].age,
         profilePicture: data[i].profilePicture,
+        about: data[i].about,
+
+        roles: data[i].roles,
+        links: data[i].links,
+        images: data[i].images,
+      });
+      getMemberId(data[i].name).then((id) => {
+        members.value[i].id = id;
       });
     }
   });
@@ -472,13 +411,16 @@ onMounted(async () => {
   await getProjects().then((data) => {
     for (let i in data) {
       const d = data[i];
+
       projects.value.push({
         name: d.name,
         description: d.description,
+        descriptionPortuguese: d.descriptionPortuguese,
         coverImage: d.coverImage,
         members: d.members,
-        id: "",
+        id: ""
       });
+
       getProjectId(d.name).then((id) => {
         projects.value[i].id = id;
       });
@@ -496,20 +438,21 @@ onMounted(async () => {
 }
 
 .projectsSelectorContainer {
-  background-color: #202020;
+  background-color: #000000;
   height: 100vh;
   width: 300px;
+  padding: 0 10px;
   border-right: 1px solid #303030;
 }
 
 .projectsContainer {
-  background-color: #202020;
+  background-color: #000000;
   height: 100vh;
   width: 100%;
 }
 
 .projectContentContainer {
-  background-color: #202020;
+  background-color: #000000;
   height: 100vh;
   width: 100%;
 }
@@ -523,7 +466,7 @@ onMounted(async () => {
   padding: 25%;
   text-align: center;
   /* background error */
-  background: #404040;
+  background: #131313;
 }
 
 .projectContentWrapper {
@@ -561,12 +504,44 @@ onMounted(async () => {
   text-align: center;
 }
 
+.membersWrapper {
+  display: flex;
+  padding: 10px;
+  max-width: 80%;
+}
+
 .areYouSure div {
   height: fit-content;
 }
 
 .coverImage {
-  width: 100%;
-  /* max-width: 500px; */
+  width: 70%;
+}
+
+.memberCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  padding: 10px;
+  background-color: #111111;
+
+  width: 200px;
+  height: 200px;
+
+  border-radius: 10px;
+}
+
+.memberCard img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.selectorText {
+  background: #000;
 }
 </style>
