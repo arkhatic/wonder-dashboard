@@ -376,7 +376,7 @@ const index = ref<number>(-1);
 const notVerified = ref<Member[]>([]);
 
 const selectedMember = ref<string>();
-const selected = ref<Member>();
+const selected: Member = ref<Member>();
 const ready = ref<boolean>(false);
 
 const updatedMember = ref<Member>(memberBoilerplate);
