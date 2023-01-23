@@ -103,13 +103,16 @@
           v-if="selectedIndex === 3"
           class="textsWrapper"
         >
-
           <v-text-field
-          v-for="(role, index) in roles"
-            :label="role"
+            v-for="(role, index) in roles"
+            :label="'Role #' + index"
             v-model="roles[index]"
             class="textArea"
             :key="index"
+            prepend-inner-icon="mdi-minus"
+            @click:prepend-inner="() => {
+              roles.splice(index, 1)
+            }"
           ></v-text-field>
 
           <v-btn
@@ -119,6 +122,17 @@
           >
             Salvar
           </v-btn>
+
+          <v-btn
+            color="sucess"
+            class="saveButton"
+            style="margin-left: 10px;"
+            @click="() => { roles.push('') }"
+          >
+            Novo
+          </v-btn>
+
+          
         </div>
       </div>
     </div>
@@ -170,7 +184,7 @@ onMounted(async () => {
         for (let j in data[i]) {
           joinTexts.value[j] = data[i][j];
         }
-      } else if (i == 2) {
+      } else if (i == 3) {
         for (let j in data[i]) {
           teamTexts.value[j] = data[i][j];
         }

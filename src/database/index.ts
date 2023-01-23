@@ -41,6 +41,8 @@ async function saveMember(member: Member) {
     profilePicture: member.profilePicture,
     pronouns: member.pronouns,
     about: member.about,
+    aboutPortuguese: member.aboutPortuguese,
+    notes: member.notes,
     roles: member.roles,
     links: member.links,
     images: member.images

@@ -84,9 +84,9 @@
           ></v-checkbox>
 
           <v-radio-group v-model="updatedMember.pronouns" inline label="Pronomes">
-            <v-radio label="Ele/dele" value="Ele/dele"></v-radio>
-            <v-radio label="Ela/dela" value="Ela/dela"></v-radio>
-            <v-radio label="Elu/delu" value="Elu/delu"></v-radio>
+            <v-radio label="He/His" value="He/His"></v-radio>
+            <v-radio label="She/Her" value="She/Her"></v-radio>
+            <v-radio label="They/Them" value="They/Them"></v-radio>
           </v-radio-group>
 
           <v-text-field
@@ -114,11 +114,31 @@
           <v-textarea
             variant="filled"
             density="compact"
-            label="Sobre"
+            label="Sobre (em inglês)"
             auto-grow
             :placeholder="selected.about"
             :value="selected.about"
             v-model="updatedMember.about"
+          ></v-textarea>
+
+          <v-textarea
+            variant="filled"
+            density="compact"
+            label="Sobre (em português)"
+            auto-grow
+            :placeholder="selected.aboutPortuguese"
+            :value="selected.aboutPortuguese"
+            v-model="updatedMember.aboutPortuguese"
+          ></v-textarea>
+
+          <v-textarea
+            variant="filled"
+            density="compact"
+            label="Notas do RH"
+            auto-grow
+            :placeholder="selected.notes"
+            :value="selected.notes"
+            v-model="updatedMember.notes"
           ></v-textarea>
 
           <v-text-field
@@ -401,6 +421,8 @@ function addNewMember() {
       head: false,
       pronouns: "",
       about: "",
+      aboutPortuguese: "",
+      notes: "",
       roles: [],
       links: [''],
       images: [''],
@@ -442,7 +464,9 @@ function saveNewMember(member: Member) {
     head: member.head,
     pronouns: member.pronouns,
     about: member.about,
+    aboutPortuguese: member.aboutPortuguese,
     roles: member.roles,
+    notes: member.notes,
     links: member.links,
     images: member.images,
     profilePicture: member.profilePicture,
@@ -475,6 +499,9 @@ onMounted(async () => {
         age: data[i].age,
         profilePicture: data[i].profilePicture,
         about: data[i].about,
+        aboutPortuguese: data[i].aboutPortuguese,
+
+        notes: data[i].notes,
 
         roles: data[i].roles,
         links: data[i].links,
@@ -496,6 +523,9 @@ onMounted(async () => {
           age: data[i].age,
           profilePicture: data[i].profilePicture,
           about: data[i].about,
+          aboutPortuguese: data[i].aboutPortuguese,
+
+          notes: data[i].notes,
 
           roles: data[i].roles,
           links: data[i].links,
@@ -653,9 +683,12 @@ onMounted(async () => {
 }
 
 .members {
-  display: flex;
+  display: grid;
   flex-wrap: wrap;
   justify-content: center;
   margin-top: 15px;
+
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-gap: 10px;
 }
 </style>

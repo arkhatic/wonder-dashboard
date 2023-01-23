@@ -27,6 +27,9 @@ interface Member {
   age: string;
   profilePicture: string;
   about: string;
+  aboutPortuguese: string;
+
+  notes: string,
 
   roles: string[];
   links: string[];
@@ -44,6 +47,7 @@ const memberBoilerplate: Member = {
   age: '',
   profilePicture: '',
   about: '',
+  aboutPortuguese: '',
 
   roles: [],
   links: [''],

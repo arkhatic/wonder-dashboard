@@ -397,6 +397,7 @@ onMounted(async () => {
         age: data[i].age,
         profilePicture: data[i].profilePicture,
         about: data[i].about,
+        aboutPortuguese: data[i].aboutPortuguese,
 
         roles: data[i].roles,
         links: data[i].links,
@@ -505,9 +506,13 @@ onMounted(async () => {
 }
 
 .membersWrapper {
-  display: flex;
-  padding: 10px;
-  max-width: 80%;
+  display: grid;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 15px;
+
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-gap: 10px;
 }
 
 .areYouSure div {
