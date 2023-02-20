@@ -110,6 +110,28 @@
             :value="selected.email"
             v-model="updatedMember.email"
           ></v-text-field>
+          
+          <v-text-field
+            variant="filled"
+            density="compact"
+            label="Discord ID"
+            type="text"
+            single-line
+            :placeholder="selected.discord"
+            :value="selected.discord"
+            v-model="updatedMember.discord"
+          ></v-text-field>
+
+          <v-text-field
+            variant="filled"
+            density="compact"
+            label="Data de registro"
+            type="text"
+            single-line
+            :placeholder="selected.registrationDate"
+            :value="selected.registrationDate"
+            v-model="updatedMember.registrationDate"
+          ></v-text-field>
 
           <v-textarea
             variant="filled"
@@ -165,12 +187,6 @@
             multiple
             prepend-inner-icon="mdi-account-search"
           >
-            <!-- <template v-slot:item="{ props, item }">
-              <v-list-item
-                v-bind="props"
-                :title="item.raw.name"
-              ></v-list-item>
-            </template> -->
           </v-autocomplete>
 
           <v-divider></v-divider>
@@ -301,6 +317,14 @@
               }"
               >Salvar</v-btn
             >
+            <v-btn
+              style="margin-left: 10px;"
+              color="yellow"
+              @click="() => {
+                ready = false;
+              }"
+              >Cancelar</v-btn
+            >
           </div>
 
         </div>
@@ -309,9 +333,8 @@
       <div v-else>
         <h1>Precisam de orientação espiritual:</h1>
 
-        <div class="members">
+        <div class="members" v-if="notVerified.length > 0">
           <div
-            v-if="notVerified.length > 0"
             class="memberCard"
             v-for="(member, i) in notVerified"
             :key="member.name"
@@ -333,25 +356,73 @@
             </div>
           </div>
 
-          <div v-else my-5>
-            <h2>Não há ninguém para ser convertido atualmente.</h2>
-          </div>
+        </div>
+        
+        <div v-else my-5>
+          <h2>Não há ninguém para ser convertido atualmente.</h2>
         </div>
 
         <v-divider style="margin: 10px 0;"></v-divider>
 
-        <h2>Caso queira adicionar manualmente:</h2>
-        <v-btn 
-          color="green"
-          @click="() => {
-            addNewMember();
-          }"
-        >
-          <v-icon>mdi-plus</v-icon>
-          Adicionar novo membro
-        </v-btn>
+        <div class="full">
+          <v-btn 
+            color="green"
+            @click="() => {
+              addNewMember();
+            }"
+          >
+            <v-icon>mdi-plus</v-icon>
+            Adicionar novo membro
+          </v-btn>
+        </div>
+
+        <div class="filter">
+          <button 
+            style="border-radius: 5px;"            
+            class="px-4 py-2 mr-2 border"
+            @click="filterByRole(null)"
+            :class="selectedRole == null ? 'bg-primary' : ''"
+          >
+            Todos
+          </button>
+
+          <button 
+            v-for="role in roles"
+            :key="role"
+            style="border-radius: 5px;"              
+            class="px-4 py-2 mr-2 border"
+            @click="filterByRole(role)"
+            :class="selectedRole == role ? 'bg-primary' : ''"
+          >
+            {{ role }}
+          </button>
+        </div>
+
+        <!-- all members div -->
+        <div class="members">
+          <div
+            class="memberCard"
+            v-for="(member, i) in selectedMembers"
+            :key="member.name"
+            @click="() => {
+              selectMember(member.name)
+            }"
+          >
+            <img :src="member.profilePicture" />
+
+            <h3>{{ member.name }}</h3>
 
 
+            <div>
+              <v-chip
+                style="margin: 5px 5px 0 0;"
+              >
+                {{ member.roles[0] }}
+              </v-chip>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
@@ -367,7 +438,7 @@ import {
   getMember,
   getMemberId,
   getAllRoles,
-} from "@/database";
+} from "../database";
 import { Member, memberBoilerplate } from "../helpers/interfaces";
 import { read } from "fs";
 
@@ -376,7 +447,9 @@ const index = ref<number>(-1);
 const notVerified = ref<Member[]>([]);
 
 const selectedMember = ref<string>();
-const selected: Member = ref<Member>();
+const selectedMembers = ref<Member[]>([]);
+const selectedRole = ref<string | null>();
+const selected = ref<Member>();
 const ready = ref<boolean>(false);
 
 const updatedMember = ref<Member>(memberBoilerplate);
@@ -409,20 +482,117 @@ function selectMemberByIndex(i: number) {
   ready.value = true;
 }
 
+function filterByRole(role: string | null) {
+  selectedRole.value = role;
+  if (role === null) {
+    selectedMembers.value = members.value;
+  } else {
+    selectedMembers.value = members.value.filter((member) => {
+      return member.roles.includes(role);
+    });
+  }
+}
+
 
 function addNewMember() {
-  const memberRef = addMember();
+  function generateRandomName() {
+    const names = [
+      "João",
+      "Maria",
+      "José",
+      "Pedro",
+      "Paulo",
+      "Antônio",
+      "Carlos",
+      "Luiz",
+      "Marcos",
+      "Ricardo",
+      "Rafael",
+      "Júlio",
+      "Jorge",
+      "Miguel",
+      "Rodrigo",
+      "Gustavo",
+      "Lucas",
+    
+    ];
+    const lastNames = [
+      "Silva",
+      "Santos",
+      "Souza",
+      "Oliveira",
+      "Rodrigues",
+      "Almeida",
+      "Pereira",
+      "Nascimento",
+      "Lima",
+      "Fernandes",
+      "Araújo",
+      "Martins",
+      "Gonçalves",
+      "Ribeiro",
+      "Costa",
+      "Correia",
+      "Carvalho",
+      "Pinto",
+      "Gomes",
+      "Jesus",
+      "Melo",
+      "Barbosa",
+      "Sousa",
+      "Rocha",
+      "Alves",
+      "Teixeira",
+      "Dias",
+      "Rezende",
+      "Moreira",
+      "Cavalcanti",
+      "Monteiro",
+      "Azevedo",
+      "Ferreira",
+      "Ramos",
+      "Nogueira",
+      "Neves",
+      "Barros",
+      "Andrade",
+      "Cruz",
+      "Campos",
+      "Soares",
+      "Vieira",
+      "Leite",
+      "Santana",
+      "Pereira",
+      "Mendes",
+      "Cardoso",
+      "Vasconcelos",
+      "Cunha",
+      "Farias",
+      "Marques",
+      "Pinto",
+      "Sampaio",
+    ]
+    const randomName = names[Math.floor(Math.random() * names.length)];
+    const randomLastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    return randomName + " " + randomLastName;
+  }
+
+  const randomName = generateRandomName();
+  const memberRef = addMember(randomName);
   memberRef.then((id) => {
     members.value.push({
       id: id,
-      name: "",
+      name: randomName,
       age: "",
       email: "",
+      discord: "",
+      registrationDate: "",
+
       head: false,
       pronouns: "",
       about: "",
       aboutPortuguese: "",
       notes: "",
+
       roles: [],
       links: [''],
       images: [''],
@@ -456,16 +626,22 @@ function saveNewMember(member: Member) {
     }
   });
 
+  selectedMembers.value = members.value;
+
   saveMember({
     id: member.id,
     name: member.name,
     age: member.age,
     email: member.email,
+    discord: "",
+    registrationDate: "",
+
     head: member.head,
     pronouns: member.pronouns,
     about: member.about,
     aboutPortuguese: member.aboutPortuguese,
     roles: member.roles,
+
     notes: member.notes,
     links: member.links,
     images: member.images,
@@ -480,6 +656,7 @@ function saveNewMember(member: Member) {
 function deleteSelectedMember(id: string) {
   deleteMember(id);
   members.value = members.value.filter((m) => m.id !== id);
+  selectedMembers.value = members.value;
   snackbarDelete.value = true;
   ready.value = false;
 }
@@ -493,6 +670,8 @@ onMounted(async () => {
         verified: data[i].verified,
         head: data[i].head,
         email: data[i].email,
+        discord: data[i].discord,
+        registrationDate: data[i].registrationDate,
 
         name: data[i].name,
         pronouns: data[i].pronouns,
@@ -517,6 +696,8 @@ onMounted(async () => {
           verified: data[i].verified,
           head: data[i].head,
           email: data[i].email,
+          discord: data[i].discord,
+          registrationDate: data[i].registrationDate,
 
           name: data[i].name,
           pronouns: data[i].pronouns,
@@ -533,6 +714,7 @@ onMounted(async () => {
         });
       }
     }
+    selectedMembers.value = members.value;
   });
 
   await getAllRoles().then((data) => {
@@ -552,6 +734,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  padding: 0 20px;
 }
 .container {
   height: 100vh;
@@ -690,5 +873,12 @@ onMounted(async () => {
 
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   grid-gap: 10px;
+}
+
+.full {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
 }
 </style>

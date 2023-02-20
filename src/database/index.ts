@@ -22,8 +22,11 @@ const db = getFirestore(app);
 
 
 // members operations
-async function addMember(): Promise<string> {
-  const docRef = await addDoc(collection(db, "members"), memberBoilerplate);
+async function addMember(name: string): Promise<string> {
+  const docRef = await addDoc(collection(db, "members"), {
+    ...memberBoilerplate,
+    name: name
+  });
   return docRef.id;
 }
 

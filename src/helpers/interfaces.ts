@@ -21,6 +21,8 @@ interface Member {
   verified: boolean;
   head: boolean;
   email: string,
+  discord: string,
+  registrationDate: string,
 
   name: string;
   pronouns: string;
@@ -41,6 +43,8 @@ const memberBoilerplate: Member = {
   verified: false,
   head: false,
   email: '',
+  discord: '',
+  registrationDate: '',
 
   name: '',
   pronouns: '',
@@ -48,6 +52,8 @@ const memberBoilerplate: Member = {
   profilePicture: '',
   about: '',
   aboutPortuguese: '',
+
+  notes: '',
 
   roles: [],
   links: [''],
