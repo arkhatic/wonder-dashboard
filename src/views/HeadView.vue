@@ -633,8 +633,8 @@ function saveNewMember(member: Member) {
     name: member.name,
     age: member.age,
     email: member.email,
-    discord: "",
-    registrationDate: "",
+    discord: member.discord,
+    registrationDate: member.registrationDate,
 
     head: member.head,
     pronouns: member.pronouns,
