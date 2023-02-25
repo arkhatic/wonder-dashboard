@@ -1,5 +1,15 @@
 <template>
   <div class="container">
+    <v-snackbar v-model="snackbar" :timeout="3000" color="success">
+      Textos salvos com sucesso!
+
+      <template v-slot:actions>
+        <v-btn color="success" variant="flat" @click="snackbar = false">
+          Fechar
+        </v-btn>
+      </template>
+    </v-snackbar>
+
     <v-navigation-drawer permanent color="#000000" class="projectsSelectorContainer">
       <v-list rounded="lg" density="compact" nav>
         <!-- insert a header in the nav -->
@@ -43,97 +53,107 @@
     </v-navigation-drawer>
 
     <div class="mainContainer">
-      <v-app-bar
-        color="#000000"
-        flat
-        dense
-        rounded="lg"
-        class="appBar"
+      <div 
+        v-if="selectedIndex === 0"
+        class="textsWrapper"
       >
-        <v-toolbar-title class="title">
-          <v-icon>mdi-toolbox</v-icon>
-          <span class="titleText">Outros</span>
-        </v-toolbar-title>
-      </v-app-bar>
+        <v-textarea
+          v-for="(value, key, index) in contactTexts"
+          :label="key"
+          v-model="contactTexts[key]"
+          :value="value"
+          class="textArea"
+          :key="index"
+        ></v-textarea>
 
-      <div class="container">
-        <div 
-          v-if="selectedIndex === 0"
-          class="textsWrapper"
+        <v-btn
+          color="sucess"
+          class="saveButton"
+          @click="() => { editText('contactView', contactTexts); snackbar = true }"
         >
-          <v-textarea
-            v-for="(value, key, index) in contactTexts"
-            :label="key"
-            v-model="newContactText[key]"
-            :value="value"
-            class="textArea"
-            :key="index"
-          ></v-textarea>
-        </div>
+          Salvar
+        </v-btn>
+      </div>
 
-        <div 
-          v-if="selectedIndex === 1"
-          class="textsWrapper"
+      <div 
+        v-if="selectedIndex === 1"
+        class="textsWrapper"
+      >
+        <v-textarea
+          v-for="(value, key, index) in joinTexts"
+          :label="key"
+          v-model="joinTexts[key]"
+          :placeholder="value"
+          class="textArea"
+          :key="index"
+        ></v-textarea>
+
+        <v-btn
+          color="sucess"
+          class="saveButton"
+          @click="() => { editText('joinUsView', joinTexts); snackbar = true }"
         >
-          <v-textarea
-            v-for="(value, key, index) in joinTexts"
-            :label="key"
-            v-model="joinTexts[key]"
-            :value="value"
-            class="textArea"
-            :key="index"
-          ></v-textarea>
-        </div>
+          Salvar
+        </v-btn>
 
-        <div 
-          v-if="selectedIndex === 2"
-          class="textsWrapper"
+      </div>
+
+      <div 
+        v-if="selectedIndex === 2"
+        class="textsWrapper"
+      >
+        <v-textarea
+          v-for="(value, key, index) in teamTexts"
+          :label="key"
+          v-model="teamTexts[key]"
+          :value="value"
+          class="textArea"
+          :key="index"
+        ></v-textarea>
+
+        <v-btn
+          color="sucess"
+          class="saveButton"
+          @click="() => { editText('teamView', teamTexts); snackbar = true }"
         >
-          <v-textarea
-            v-for="(value, key, index) in teamTexts"
-            :label="key"
-            v-model="teamTexts[key]"
-            :value="value"
-            class="textArea"
-            :key="index"
-          ></v-textarea>
-        </div>
+          Salvar
+        </v-btn>
+      </div>
 
-        <div 
-          v-if="selectedIndex === 3"
-          class="textsWrapper"
+      <div 
+        v-if="selectedIndex === 3"
+        class="textsWrapper"
+      >
+        <v-text-field
+          v-for="(role, index) in roles"
+          :label="'Role #' + index"
+          v-model="roles[index]"
+          class="textArea"
+          :key="index"
+          prepend-inner-icon="mdi-minus"
+          @click:prepend-inner="() => {
+            roles.splice(index, 1)
+          }"
+        ></v-text-field>
+
+        <v-btn
+          color="sucess"
+          class="saveButton"
+          @click="() => { editRoles('roles', roles) }"
         >
-          <v-text-field
-            v-for="(role, index) in roles"
-            :label="'Role #' + index"
-            v-model="roles[index]"
-            class="textArea"
-            :key="index"
-            prepend-inner-icon="mdi-minus"
-            @click:prepend-inner="() => {
-              roles.splice(index, 1)
-            }"
-          ></v-text-field>
+          Salvar
+        </v-btn>
 
-          <v-btn
-            color="sucess"
-            class="saveButton"
-            @click="() => { editRoles('roles', roles) }"
-          >
-            Salvar
-          </v-btn>
+        <v-btn
+          color="sucess"
+          class="saveButton"
+          style="margin-left: 10px;"
+          @click="() => { roles.push('') }"
+        >
+          Novo
+        </v-btn>
 
-          <v-btn
-            color="sucess"
-            class="saveButton"
-            style="margin-left: 10px;"
-            @click="() => { roles.push('') }"
-          >
-            Novo
-          </v-btn>
-
-          
-        </div>
+        
       </div>
     </div>
         
@@ -148,6 +168,7 @@ import {
 } from '@/database';
 
 // constants
+const snackbar = ref<boolean>(false);
 const roles = ref<string[]>([]);
 const contactTexts = ref<{ [key: string]: string }>({});
 const joinTexts = ref<{ [key: string]: string }>({});
@@ -199,13 +220,13 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* .mainContainer {
-  display: flex;
-  flex-direction: column;
+.mainContainer {
   height: 100vh;
-} */
+  overflow-y: scroll;
+  padding: 15px;
+}
 .container {
-  height: 90vh;
+  height: fit-content;
   padding: 5px 15px;
   overflow-y: scroll;
 }

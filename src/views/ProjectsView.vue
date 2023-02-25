@@ -386,11 +386,14 @@ function selectProject(i: number) {
 onMounted(async () => {
   await getMembers().then((data) => {
     for (let i in data) {
+      if (data[i].verified == false) continue;
       members.value.push({
         id: data[i].id,
         verified: data[i].verified,
         head: data[i].head,
         email: data[i].email,
+        discord: data[i].discord,
+        registrationDate: data[i].registrationDate,
 
         name: data[i].name,
         pronouns: data[i].pronouns,
@@ -402,9 +405,7 @@ onMounted(async () => {
         roles: data[i].roles,
         links: data[i].links,
         images: data[i].images,
-      });
-      getMemberId(data[i].name).then((id) => {
-        members.value[i].id = id;
+        notes: ""
       });
     }
   });

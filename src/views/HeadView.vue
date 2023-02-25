@@ -606,7 +606,7 @@ function addNewMember() {
     });
     saveMemberId(id, randomName);
     selectMemberByIndex(members.value.length - 1);
-    
+
     notVerified.value = members.value.filter((m) => m.verified === false);
     snackbarAdd.value = true;
   });
@@ -777,6 +777,7 @@ onMounted(async () => {
 
 .profilePreview {
   width: fit-content;
+  max-width: 45%;
   height: fit-content;
   background-color: #181818;
   border-radius: 5px;
