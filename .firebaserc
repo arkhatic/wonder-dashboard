@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "wonder-acid"
+  },
+  "targets": {
+    "wonder-acid": {
+      "hosting": {
+        "dashboard": [
+          "wonder-acid-dashboard"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

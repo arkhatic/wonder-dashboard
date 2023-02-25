@@ -30,6 +30,15 @@ async function addMember(name: string): Promise<string> {
   return docRef.id;
 }
 
+async function saveMemberId(memberId: string, memberName: string) {
+  const docRef = await setDoc(doc(db, 'members', memberId), {
+    ...memberBoilerplate,
+    id: memberId,
+    name: memberName,
+  });
+  return docRef;
+}
+
 async function saveMember(member: Member) {
   console.log(member);
 
@@ -220,7 +229,7 @@ async function editText(id: string, text: { [key: string]: string; }) {
 
 export {
   app,
-  getMember, getMembers, addMember, deleteMember, saveMember, getMemberId,
+  getMember, getMembers, addMember, deleteMember, saveMember, getMemberId, saveMemberId,
   getProjects, addProject, editProject, deleteProject, getProjectId,
   checkIfVerified, checkIfHead,
   getAllRoles, getAllTexts, editRoles, editText,

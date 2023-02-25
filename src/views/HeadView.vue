@@ -332,8 +332,10 @@
 
       <div v-else>
         <h1>Precisam de orientação espiritual:</h1>
-
+        
+        <v-chip v-if="notVerified.length > 0">{{ notVerified.length }} {{ notVerified.length > 1 ? "pessoas" : "pessoa" }}</v-chip>
         <div class="members" v-if="notVerified.length > 0">
+
           <div
             class="memberCard"
             v-for="(member, i) in notVerified"
@@ -376,6 +378,7 @@
           </v-btn>
         </div>
 
+
         <div class="filter">
           <button 
             style="border-radius: 5px;"            
@@ -399,6 +402,7 @@
         </div>
 
         <!-- all members div -->
+        <v-chip class="mt-4">{{ selectedMembers.length }} {{ selectedMembers.length == 0 ? ':(' : 'devs'}}</v-chip>
         <div class="members">
           <div
             class="memberCard"
@@ -438,6 +442,7 @@ import {
   getMember,
   getMemberId,
   getAllRoles,
+  saveMemberId
 } from "../database";
 import { Member, memberBoilerplate } from "../helpers/interfaces";
 import { read } from "fs";
@@ -485,10 +490,10 @@ function selectMemberByIndex(i: number) {
 function filterByRole(role: string | null) {
   selectedRole.value = role;
   if (role === null) {
-    selectedMembers.value = members.value;
+    selectedMembers.value = members.value.filter((m) => m.verified === true);
   } else {
     selectedMembers.value = members.value.filter((member) => {
-      return member.roles.includes(role);
+      return member.roles.includes(role) && member.verified === true;
     });
   }
 }
@@ -599,10 +604,13 @@ function addNewMember() {
       profilePicture: "",
       verified: false,
     });
+    saveMemberId(id, randomName);
     selectMemberByIndex(members.value.length - 1);
+    
+    notVerified.value = members.value.filter((m) => m.verified === false);
+    snackbarAdd.value = true;
   });
 
-  snackbarAdd.value = true;
 }
 
 function saveNewMember(member: Member) {
@@ -649,6 +657,7 @@ function saveNewMember(member: Member) {
     verified: member.verified,
   });
   
+  notVerified.value = members.value.filter((m) => m.verified === false);
   snackbarSave.value = true;
   ready.value = false;
 }
@@ -656,6 +665,7 @@ function saveNewMember(member: Member) {
 function deleteSelectedMember(id: string) {
   deleteMember(id);
   members.value = members.value.filter((m) => m.id !== id);
+  notVerified.value = members.value.filter((m) => m.verified === false);
   selectedMembers.value = members.value;
   snackbarDelete.value = true;
   ready.value = false;
@@ -714,7 +724,8 @@ onMounted(async () => {
         });
       }
     }
-    selectedMembers.value = members.value;
+    // add verified members to selected members
+    selectedMembers.value = members.value.filter((m) => m.verified === true);
   });
 
   await getAllRoles().then((data) => {
@@ -844,7 +855,6 @@ onMounted(async () => {
   justify-content: center;
   padding: 10px;
   background-color: #111111;
-  margin: 10px;
 
   width: 200px;
   height: fit-content;
@@ -869,10 +879,10 @@ onMounted(async () => {
   display: grid;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: 15px;
+  margin-top: 10px;
 
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  grid-gap: 10px;
+  grid-gap: 20px;
 }
 
 .full {
