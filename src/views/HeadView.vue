@@ -635,6 +635,9 @@ function saveNewMember(member: Member) {
   });
 
   selectedMembers.value = members.value;
+  let pfp = member.profilePicture;
+
+  if (member.profilePicture == "") pfp = "https://cdn.discordapp.com/attachments/1002714469945835633/1079841194089123961/image.png"
 
   saveMember({
     id: member.id,
@@ -653,7 +656,7 @@ function saveNewMember(member: Member) {
     notes: member.notes,
     links: member.links,
     images: member.images,
-    profilePicture: member.profilePicture,
+    profilePicture: pfp,
     verified: member.verified,
   });
   
@@ -673,6 +676,11 @@ function deleteSelectedMember(id: string) {
 
 onMounted(async () => {
   await getMembers().then((data) => {
+        for (let i in data) {
+              console.log(data[i].verified)
+                    members.value.push({
+
+  })then((data) => {
     for (let i in data) {
       console.log(data[i].verified)
       members.value.push({
