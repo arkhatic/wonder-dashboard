@@ -637,7 +637,9 @@ function saveNewMember(member: Member) {
   selectedMembers.value = members.value;
   let pfp = member.profilePicture;
 
-  if (member.profilePicture == "") pfp = "https://cdn.discordapp.com/attachments/1002714469945835633/1079841194089123961/image.png"
+  if (member.profilePicture == "") {
+    pfp = "https://cdn.discordapp.com/attachments/1002714469945835633/1079841194089123961/image.png";
+  }
 
   saveMember({
     id: member.id,
