@@ -678,11 +678,6 @@ function deleteSelectedMember(id: string) {
 
 onMounted(async () => {
   await getMembers().then((data) => {
-        for (let i in data) {
-              console.log(data[i].verified)
-                    members.value.push({
-
-  })then((data) => {
     for (let i in data) {
       console.log(data[i].verified)
       members.value.push({
