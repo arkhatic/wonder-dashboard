@@ -25,6 +25,7 @@ const db = getFirestore(app);
 async function addMember(name: string): Promise<string> {
   const docRef = await addDoc(collection(db, "members"), {
     ...memberBoilerplate,
+    profilePicture: "https://cdn.discordapp.com/attachments/1002714469945835633/1079841194089123961/image.png",
     name: name
   });
   return docRef.id;

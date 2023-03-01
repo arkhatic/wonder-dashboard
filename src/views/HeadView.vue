@@ -601,7 +601,7 @@ function addNewMember() {
       roles: [],
       links: [''],
       images: [''],
-      profilePicture: "",
+      profilePicture: "https://cdn.discordapp.com/attachments/1002714469945835633/1079841194089123961/image.png",
       verified: false,
     });
     saveMemberId(id, randomName);
