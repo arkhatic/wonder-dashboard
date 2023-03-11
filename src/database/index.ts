@@ -59,6 +59,7 @@ async function saveMember(member: Member) {
     aboutPortuguese: member.aboutPortuguese,
     notes: member.notes,
     roles: member.roles,
+    primaryRole: member.primaryRole,
     links: member.links,
     images: member.images
   });

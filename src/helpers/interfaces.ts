@@ -29,11 +29,12 @@ interface Member {
   age: string;
   profilePicture: string;
   about: string;
-  aboutPortuguese: string;
+  aboutTechnical: string;
 
   notes: string,
 
   roles: string[];
+  primaryRole: string;
   links: string[];
   images: string[];
 }
@@ -51,11 +52,12 @@ const memberBoilerplate: Member = {
   age: '',
   profilePicture: '',
   about: '',
-  aboutPortuguese: '',
+  aboutTechnical: '',
 
   notes: '',
 
   roles: [],
+  primaryRole: '',
   links: [''],
   images: [''],
 }

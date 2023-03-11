@@ -136,7 +136,7 @@
           <v-textarea
             variant="filled"
             density="compact"
-            label="Sobre (em inglês)"
+            label="Sobre você"
             auto-grow
             :placeholder="selected.about"
             :value="selected.about"
@@ -146,11 +146,11 @@
           <v-textarea
             variant="filled"
             density="compact"
-            label="Sobre (em português)"
+            label="Sobre suas competências (Linguagens de programação, estilos de arte e animação, etc)"
             auto-grow
-            :placeholder="selected.aboutPortuguese"
-            :value="selected.aboutPortuguese"
-            v-model="updatedMember.aboutPortuguese"
+            :placeholder="selected.aboutTechnical"
+            :value="selected.aboutTechnical"
+            v-model="updatedMember.aboutTechnical"
           ></v-textarea>
 
           <v-textarea
@@ -188,6 +188,16 @@
             prepend-inner-icon="mdi-account-search"
           >
           </v-autocomplete>
+
+          <v-text-field
+            variant="filled"
+            density="compact"
+            label="Cargo principal"
+            type="text"
+            :placeholder="selected.primaryRole"
+            :value="selected.primaryRole"
+            v-model="updatedMember.primaryRole"
+          ></v-text-field>
 
           <v-divider></v-divider>
 
@@ -273,11 +283,13 @@
           <v-chip>{{ updatedMember.head ? 'Membro da head' : 'Não é membro da head' }}</v-chip>
           <p>{{ updatedMember.about }}</p>
 
+          <h5>{{  updatedMember.primaryRole }}</h5>
           <div class="roles">
             <v-chip style="margin: 5px;" v-for="(role, index) in updatedMember.roles" :key="index">
               {{ role }}
             </v-chip>
           </div>
+
 
           <div class="links">
             <a
@@ -595,10 +607,11 @@ function addNewMember() {
       head: false,
       pronouns: "",
       about: "",
-      aboutPortuguese: "",
+      aboutTechnical: "",
       notes: "",
 
       roles: [],
+      primaryRole: "",
       links: [''],
       images: [''],
       profilePicture: "https://cdn.discordapp.com/attachments/1002714469945835633/1079841194089123961/image.png",
@@ -652,8 +665,9 @@ function saveNewMember(member: Member) {
     head: member.head,
     pronouns: member.pronouns,
     about: member.about,
-    aboutPortuguese: member.aboutPortuguese,
+    aboutTechnical: member.aboutTechnical,
     roles: member.roles,
+    primaryRole: member.primaryRole,
 
     notes: member.notes,
     links: member.links,
@@ -693,11 +707,12 @@ onMounted(async () => {
         age: data[i].age,
         profilePicture: data[i].profilePicture,
         about: data[i].about,
-        aboutPortuguese: data[i].aboutPortuguese,
+        aboutTechnical: data[i].aboutTechnical,
 
         notes: data[i].notes,
 
         roles: data[i].roles,
+        primaryRole: data[i].primaryRole,
         links: data[i].links,
         images: data[i].images,
       });
@@ -719,11 +734,12 @@ onMounted(async () => {
           age: data[i].age,
           profilePicture: data[i].profilePicture,
           about: data[i].about,
-          aboutPortuguese: data[i].aboutPortuguese,
+          aboutTechnical: data[i].aboutTechnical,
 
           notes: data[i].notes,
 
           roles: data[i].roles,
+          primaryRole: data[i].primaryRole,
           links: data[i].links,
           images: data[i].images,
         });
