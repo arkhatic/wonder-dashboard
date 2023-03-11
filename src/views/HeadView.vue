@@ -654,6 +654,8 @@ function saveNewMember(member: Member) {
     pfp = "https://cdn.discordapp.com/attachments/1002714469945835633/1079841194089123961/image.png";
   }
 
+  console.log(member.primaryRole)
+
   saveMember({
     id: member.id,
     name: member.name,

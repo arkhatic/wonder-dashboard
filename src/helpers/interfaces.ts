@@ -50,14 +50,14 @@ const memberBoilerplate: Member = {
   name: '',
   pronouns: '',
   age: '',
-  profilePicture: '',
-  about: '',
-  aboutTechnical: '',
+  profilePicture: '-',
+  about: '-',
+  aboutTechnical: '-',
 
-  notes: '',
+  notes: '-',
 
   roles: [],
-  primaryRole: '',
+  primaryRole: '-',
   links: [''],
   images: [''],
 }
