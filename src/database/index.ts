@@ -4,6 +4,9 @@ import {
   collection, query, where,
   getDoc, getDocs, addDoc, deleteDoc, doc, setDoc, DocumentData 
 } from 'firebase/firestore';
+import {
+  getStorage, ref, uploadBytes, getDownloadURL
+} from 'firebase/storage';
 
 import { Project, Member, projectBoilerplate, memberBoilerplate } from '../helpers/interfaces';
 
@@ -19,7 +22,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
+const storage = getStorage(app);
 
 // members operations
 async function addMember(name: string): Promise<string> {
@@ -219,8 +222,6 @@ async function getTeamText() {
   return texts;
 }
 
-
-
 async function editText(id: string, text: { [key: string]: string; }) {
   const docRef = doc(db, 'texts', id);
   await deleteDoc(docRef);
@@ -229,11 +230,35 @@ async function editText(id: string, text: { [key: string]: string; }) {
 }
 
 
+// storage operations
+async function uploadImage(file: File, id: string) {
+  const storageRef = ref(storage, `images/${id}/${file.name}`);
+  await uploadBytes(storageRef, file);
+  const url = await getDownloadURL(storageRef);
+  return url;
+}
+
+async function uploadProfilePicture(file: File, id: string) {
+  const storageRef = ref(storage, `images/${id}/profilePicture/${file.name}`);
+  await uploadBytes(storageRef, file);
+  const url = await getDownloadURL(storageRef);
+  return url;
+}
+
+async function uploadCoverImage(file: File, id: string) {
+  const storageRef = ref(storage, `images/${id}/coverImage/${file.name}`);
+  await uploadBytes(storageRef, file);
+  const url = await getDownloadURL(storageRef);
+  return url;
+}
+
 export {
   app,
   getMember, getMembers, addMember, deleteMember, saveMember, getMemberId, saveMemberId,
   getProjects, addProject, editProject, deleteProject, getProjectId,
   checkIfVerified, checkIfHead,
   getAllRoles, getAllTexts, editRoles, editText,
-  getContactText, getJoinText, getTeamText
+  getContactText, getJoinText, getTeamText,
+  uploadImage, uploadProfilePicture, uploadCoverImage
+
 };

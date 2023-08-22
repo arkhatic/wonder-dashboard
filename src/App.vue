@@ -199,4 +199,13 @@ form button:focus, form input:focus {
 .bgbg {
   background-color: #040404;
 }
+
+@font-face {
+  font-family: 'Google Sans';
+  src: url("./assets/Product Sans Regular.ttf");
+}
+
+body, h1, h2, h3, h4, h5, h6, p, a, li, span, div, input, button, textarea {
+  font-family: 'Google Sans' !important;
+}
 </style>

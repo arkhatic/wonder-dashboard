@@ -154,26 +154,40 @@
           ></v-textarea>
 
           <v-textarea
-            variant="filled"
-            density="compact"
-            label="Notas do RH"
-            auto-grow
-            :placeholder="selected.notes"
-            :value="selected.notes"
-            v-model="updatedMember.notes"
+          variant="filled"
+          density="compact"
+          label="Notas do RH"
+          auto-grow
+          :placeholder="selected.notes"
+          :value="selected.notes"
+          v-model="updatedMember.notes"
           ></v-textarea>
+          
+          <v-divider class="mb-4"></v-divider>
 
-          <v-text-field
-            variant="filled"
-            density="compact"
-            label="Link da imagem do perfil"
-            type="text"
-            :placeholder="selected.profilePicture"
-            :value="selected.profilePicture"
-            v-model="updatedMember.profilePicture"
-          ></v-text-field>
+          <v-code class="mb-2">{{ updatedMember.profilePicture == defaultImage ? "Imagem padrão. Recomendado adicionar uma foto personalizada." : selected.profilePicture }}</v-code>
+          <div class="flex">
+            <v-file-input 
+              clearable 
+              density="compact"
+              :label="selected.profilePicture == defaultImage ? 'Adicionar foto de perfil' : 'Alterar foto de perfil'"
+              accept="image/*"
+              @change="uploadImagePreview"
+            >
+            </v-file-input>
+            
+            <v-btn
+              color="red"
+              class="ml-2"
+              @click="() => {
+                updatedMember.profilePicture = defaultImage;
+              }"
+              >Resetar imagem para padrão
+            </v-btn>
+          
+          </div>
 
-          <v-divider></v-divider>
+          <v-divider class="mb-4"></v-divider>
         
           <v-autocomplete
             v-model="updatedMember.roles"
@@ -278,10 +292,10 @@
           </div>
 
           <h2>{{ updatedMember.name }}, {{ updatedMember.age }}</h2>
-          <h6>{{  updatedMember.id }}</h6>
+          <v-code>{{  updatedMember.id }}</v-code>
           <p>{{ updatedMember.email }}</p>
           <v-chip>{{ updatedMember.head ? 'Membro da head' : 'Não é membro da head' }}</v-chip>
-          <p>{{ updatedMember.about }}</p>
+          <p class="about">{{ updatedMember.about }}</p>
 
           <h5>{{  updatedMember.primaryRole }}</h5>
           <div class="roles">
@@ -458,6 +472,7 @@ import {
 } from "../database";
 import { Member, memberBoilerplate } from "../helpers/interfaces";
 import { read } from "fs";
+import { uploadProfilePicture } from "../database";
 
 const members = ref<Member[]>([]);
 const index = ref<number>(-1);
@@ -476,6 +491,9 @@ const snackbarDelete = ref(false);
 const snackbarSave = ref(false);
 
 const roles = ref<string[]>([]);
+const thisFile = ref(null);
+
+const defaultImage = "https://cdn.discordapp.com/attachments/1002714469945835633/1079841194089123961/image.png";
 
 function selectMember(member: string) {
   if (member === null) {
@@ -508,6 +526,17 @@ function filterByRole(role: string | null) {
       return member.roles.includes(role) && member.verified === true;
     });
   }
+}
+
+function uploadImagePreview(file) {
+  thisFile.value = file.target.files[0];
+  updatedMember.value.profilePicture = URL.createObjectURL(thisFile.value);
+}
+
+async function uploadImage(): Promise<string|undefined> {
+  if (thisFile.value === null) return defaultImage;
+  const url = await uploadProfilePicture(thisFile.value, updatedMember.value.id);
+  return url;
 }
 
 
@@ -626,9 +655,8 @@ function addNewMember() {
 
 }
 
-function saveNewMember(member: Member) {
+async function saveNewMember(member: Member) {
   // if member was in notVerified, remove it from the array
-  console.log(members.value)
   if (member.verified) {
     notVerified.value = notVerified.value.filter((m) => m.id !== member.id);
   }
@@ -648,14 +676,22 @@ function saveNewMember(member: Member) {
   });
 
   selectedMembers.value = members.value;
-  let pfp = member.profilePicture;
+  let pfp: string|undefined = undefined;
 
-  if (member.profilePicture == "") {
-    pfp = "https://cdn.discordapp.com/attachments/1002714469945835633/1079841194089123961/image.png";
-  }
-
-  console.log(member.primaryRole)
-
+  await uploadImage().then((url) => {
+    if (member.profilePicture == "") {
+      pfp = defaultImage;
+    }
+    else if (thisFile.value != null) {
+      pfp = url;
+      console.log("YES")
+    }
+    else {
+      pfp = member.profilePicture;
+    }
+  });
+  
+  
   saveMember({
     id: member.id,
     name: member.name,
@@ -695,7 +731,6 @@ function deleteSelectedMember(id: string) {
 onMounted(async () => {
   await getMembers().then((data) => {
     for (let i in data) {
-      console.log(data[i].verified)
       members.value.push({
         id: "",
         verified: data[i].verified,
@@ -914,5 +949,17 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   margin: 20px 0;
+}
+
+.about {
+  max-width: 400px;
+}
+
+.flex {
+  display: flex;
+}
+
+.uploadButton {
+  height: 100%;
 }
 </style>
