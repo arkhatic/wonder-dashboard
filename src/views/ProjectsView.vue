@@ -141,12 +141,21 @@
                       :placeholder="projects[index].descriptionPortuguese"
                       v-model="projects[index].descriptionPortuguese"
                     ></v-text-field>
-                    <v-text-field
+                    <!-- <v-text-field
                       label="Link da imagem do projeto"
                       type="text"
                       :placeholder="projects[index].coverImage"
                       v-model="projects[index].coverImage"
-                    ></v-text-field>
+                    ></v-text-field> -->
+                    <v-chip>{{ projects[index].coverImage }}</v-chip>
+                    <v-file-input
+                      clearable
+                      label="Adicionar imagem do projeto"  
+                      accept="image/*"
+                      @change="uploadImagePreview"
+                    >
+
+                    </v-file-input>
                     
                     <!-- make a selectable members area -->
                     <v-divider class="my-4"></v-divider>
@@ -294,6 +303,7 @@ import {
 } from "@/database";
 import { Project, Member } from "../helpers/interfaces";
 import { DocumentData } from "@firebase/firestore";
+import { uploadCoverImage } from "../database";
 
 // custom variables
 const projects = ref<Project[]>([]);
@@ -309,6 +319,8 @@ const snackbarMemberDeleted = ref(false);
 
 const projectMembers = ref<Member[]>([]);
 const membersToAdd = ref<string[]>([]);
+
+const thisFile = ref<File | null>(null);
 
 const step = ref(1);
 
@@ -337,7 +349,7 @@ function deleteExistingProject(id: string) {
   deleteProject(id);
 }
 
-function saveProject() {
+async function saveProject() {
   snackbarSaved.value = true;
 
   let membersIds: string[] = [];
@@ -351,13 +363,19 @@ function saveProject() {
   console.log(membersToAdd)
   console.log(membersIds)
 
+  let coverImage = projects.value[index.value].coverImage;
+  await uploadImage().then((url) => {
+    if (thisFile.value !== null) coverImage = url;
+  });
+
+  console.log(coverImage)
 
   editProject({
     id: projects.value[index.value].id,
     name: projects.value[index.value].name,
     description: projects.value[index.value].description,
     descriptionPortuguese: projects.value[index.value].descriptionPortuguese,
-    coverImage: projects.value[index.value].coverImage,
+    coverImage: coverImage,
     members: membersIds,
   });
 
@@ -381,6 +399,16 @@ function selectProject(i: number) {
     });
   }
 }
+
+function uploadImagePreview(file) {
+  thisFile.value = file.target.files[0];
+}
+
+async function uploadImage() {
+  const url = await uploadCoverImage(thisFile.value, projects.value[index.value].id);
+  return url;
+}
+
 
 // vue methods
 onMounted(async () => {

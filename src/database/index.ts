@@ -246,7 +246,7 @@ async function uploadProfilePicture(file: File, id: string) {
 }
 
 async function uploadCoverImage(file: File, id: string) {
-  const storageRef = ref(storage, `images/${id}/coverImage/${file.name}`);
+  const storageRef = ref(storage, `images/projects/${id}/coverImage/${file.name}`);
   await uploadBytes(storageRef, file);
   const url = await getDownloadURL(storageRef);
   return url;

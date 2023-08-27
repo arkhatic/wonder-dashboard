@@ -60,7 +60,7 @@
       <div v-if="ready" class="profileWrapper">
         <div class="profileEditor">
           <v-text-field
-            variant="filled"
+            variant="solo"
             density="compact"
             label="Nome"
             type="text"
@@ -90,7 +90,7 @@
           </v-radio-group>
 
           <v-text-field
-            variant="filled"
+            variant="solo"
             density="compact"
             label="Idade"
             type="number"
@@ -101,7 +101,7 @@
           ></v-text-field>
 
           <v-text-field
-            variant="filled"
+            variant="solo"
             density="compact"
             label="Email"
             type="email"
@@ -112,7 +112,7 @@
           ></v-text-field>
           
           <v-text-field
-            variant="filled"
+            variant="solo"
             density="compact"
             label="Discord ID"
             type="text"
@@ -123,7 +123,7 @@
           ></v-text-field>
 
           <v-text-field
-            variant="filled"
+            variant="solo"
             density="compact"
             label="Data de registro"
             type="text"
@@ -134,7 +134,7 @@
           ></v-text-field>
 
           <v-textarea
-            variant="filled"
+            variant="solo"
             density="compact"
             label="Sobre você"
             auto-grow
@@ -144,7 +144,7 @@
           ></v-textarea>
 
           <v-textarea
-            variant="filled"
+            variant="solo"
             density="compact"
             label="Sobre suas competências (Linguagens de programação, estilos de arte e animação, etc)"
             auto-grow
@@ -154,7 +154,7 @@
           ></v-textarea>
 
           <v-textarea
-          variant="filled"
+          variant="solo"
           density="compact"
           label="Notas do RH"
           auto-grow
@@ -169,6 +169,7 @@
           <div class="flex">
             <v-file-input 
               clearable 
+              variant="solo"
               density="compact"
               :label="selected.profilePicture == defaultImage ? 'Adicionar foto de perfil' : 'Alterar foto de perfil'"
               accept="image/*"
@@ -191,11 +192,11 @@
         
           <v-autocomplete
             v-model="updatedMember.roles"
+            variant="solo"
             :items="roles"
             color="blue-grey-lighten-2"
             item-title="name"
             item-value="name"
-            variant="underlined"
             clearable
             label="Cargos"
             multiple
@@ -204,7 +205,7 @@
           </v-autocomplete>
 
           <v-text-field
-            variant="filled"
+            variant="solo"
             density="compact"
             label="Cargo principal"
             type="text"
@@ -223,7 +224,7 @@
               class="d-flex flex-row"
             >
               <v-text-field
-                variant="filled"
+                variant="solo"
                 density="compact"
                 label="Link"
                 type="text"
@@ -259,7 +260,7 @@
               class="d-flex flex-row"
             >
             <v-text-field
-              variant="filled"
+              variant="solo"
               density="compact"
               label="Link"
               type="text"
@@ -407,7 +408,7 @@
 
         <div class="filter">
           <button 
-            style="border-radius: 5px;"            
+            style="border-radius: 30px;"            
             class="px-4 py-2 mr-2 border"
             @click="filterByRole(null)"
             :class="selectedRole == null ? 'bg-primary' : ''"
@@ -418,7 +419,7 @@
           <button 
             v-for="role in roles"
             :key="role"
-            style="border-radius: 5px;"              
+            style="border-radius: 30px;"              
             class="px-4 py-2 mr-2 border"
             @click="filterByRole(role)"
             :class="selectedRole == role ? 'bg-primary' : ''"
@@ -824,13 +825,17 @@ onMounted(async () => {
 }
 .profileEditor {
   background-color: #181818;
-  border-radius: 5px;
-  padding: 15px;
+  border-radius: px;
+  padding: 20px;
 
   width: 45%;
   height: fit-content;
   display: flex;
   flex-direction: column;
+}
+
+button {
+  border-radius: 30px;
 }
 
 .profilePreview {
@@ -912,13 +917,14 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px;
+  padding: 15px;
+  padding-top: 20px;
   background-color: #111111;
 
   width: 200px;
   height: fit-content;
 
-  border-radius: 10px;
+  border-radius: 30px;
 
   cursor: pointer;
 }
