@@ -38,6 +38,14 @@
           @click="() => { select(2) }"
         >
         </v-list-item>
+        <v-list-item  
+          density="compact"
+          title="Workforce View"
+          value="Workforce"
+          prepend-icon="mdi-projector-screen"
+          @click="() => { select(4) }"
+        >
+        </v-list-item>
 
         <v-divider></v-divider>
 
@@ -155,6 +163,28 @@
 
         
       </div>
+
+      <div 
+        v-if="selectedIndex === 4"
+        class="textsWrapper"
+      >
+        <v-textarea
+          v-for="(value, key, index) in workforceTexts"
+          :label="key"
+          v-model="workforceTexts[key]"
+          :value="value"
+          class="textArea"
+          :key="index"
+        ></v-textarea>
+
+        <v-btn
+          color="sucess"
+          class="saveButton"
+          @click="() => { editText('teamView', workforceTexts); snackbar = true }"
+        >
+          Salvar
+        </v-btn>
+      </div>
     </div>
         
   </div>
@@ -173,6 +203,7 @@ const roles = ref<string[]>([]);
 const contactTexts = ref<{ [key: string]: string }>({});
 const joinTexts = ref<{ [key: string]: string }>({});
 const teamTexts = ref<{ [key: string]: string }>({});
+const workforceTexts = ref<{ [key: string]: string }>({});
 
 const newContactText = ref<{ [key: string]: string }>({});
 
@@ -209,6 +240,10 @@ onMounted(async () => {
         for (let j in data[i]) {
           teamTexts.value[j] = data[i][j];
         }
+      } else if (i == 4) {
+        for (let j in data[i]) {
+          workforceTexts.value[j] = data[i][j];
+        } 
       }
     }
   });

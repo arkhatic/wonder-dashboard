@@ -359,16 +359,17 @@ async function saveProject() {
       membersIds.push(member);
     })
   }
-
-  console.log(membersToAdd)
-  console.log(membersIds)
-
+  console.log(thisFile.value)
   let coverImage = projects.value[index.value].coverImage;
-  await uploadImage().then((url) => {
-    if (thisFile.value !== null) coverImage = url;
-  });
+  if (thisFile.value !== null) {
+    console.log("thisFile.value !== null")
+  
+    await uploadImage().then((url) => {
+      if (thisFile.value !== null) coverImage = url;
+    });
+  }
 
-  console.log(coverImage)
+  console.log(membersIds)
 
   editProject({
     id: projects.value[index.value].id,
